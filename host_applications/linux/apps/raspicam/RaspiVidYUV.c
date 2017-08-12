@@ -182,7 +182,6 @@ static XREF_T  initial_map[] =
 static int initial_map_size = sizeof(initial_map) / sizeof(initial_map[0]);
 
 
-static void display_valid_parameters(char *app_name);
 
 /// Command ID's and Structure defining our command line options
 #define CommandHelp         0
@@ -289,53 +288,6 @@ static void default_status(RASPIVIDYUV_STATE *state)
    raspicamcontrol_set_defaults(&state->camera_parameters);
 }
 
-
-/**
- * Dump image state parameters to stderr.
- *
- * @param state Pointer to state structure to assign defaults to
- */
-static void dump_status(RASPIVIDYUV_STATE *state)
-{
-   int i, size, ystride, yheight;
-
-   if (!state)
-   {
-      vcos_assert(0);
-      return;
-   }
-
-   fprintf(stderr, "Width %d, Height %d, filename %s\n", state->width, state->height, state->filename);
-   fprintf(stderr, "framerate %d, time delay %d\n", state->framerate, state->timeout);
-
-   // Calculate the individual image size
-   // Y stride rounded to multiple of 32. U&V stride is Y stride/2 (ie multiple of 16).
-   // Y height is padded to a 16. U/V height is Y height/2 (ie multiple of 8).
-
-   // Y plane
-   ystride = ((state->width + 31) & ~31);
-   yheight = ((state->height + 15) & ~15);
-
-   size = ystride * yheight;
-
-   // U and V plane
-   size += 2 * ystride/2 * yheight/2;
-
-   fprintf(stderr, "Sub-image size %d bytes in total.\n  Y pitch %d, Y height %d, UV pitch %d, UV Height %d\n", size, ystride, yheight, ystride/2,yheight/2);
-
-   fprintf(stderr, "Wait method : ");
-   for (i=0;i<wait_method_description_size;i++)
-   {
-      if (state->waitMethod == wait_method_description[i].nextWaitMethod)
-         fprintf(stderr, "%s", wait_method_description[i].description);
-   }
-   fprintf(stderr, "\nInitial state '%s'\n", raspicli_unmap_xref(state->bCapturing, initial_map, initial_map_size));
-   fprintf(stderr, "\n\n");
-
-   raspipreview_dump_parameters(&state->preview_parameters);
-   raspicamcontrol_dump_parameters(&state->camera_parameters);
-}
-
 /**
  * Parse the incoming command line and put resulting parameters in to the state
  *
@@ -378,7 +330,6 @@ static int parse_cmdline(int argc, const char **argv, RASPIVIDYUV_STATE *state)
       switch (command_id)
       {
       case CommandHelp:
-         display_valid_parameters(basename(argv[0]));
          return -1;
 
       case CommandWidth: // Width > 0
@@ -616,42 +567,6 @@ static int parse_cmdline(int argc, const char **argv, RASPIVIDYUV_STATE *state)
 }
 
 /**
- * Display usage information for the application to stdout
- *
- * @param app_name String to display as the application name
- */
-static void display_valid_parameters(char *app_name)
-{
-   fprintf(stdout, "Display camera output to display, and optionally saves an uncompressed YUV420 file \n\n");
-   fprintf(stdout, "NOTE: High resolutions and/or frame rates may exceed the bandwidth of the system due\n");
-   fprintf(stdout, "to the large amounts of data being moved to the SD card. This will result in undefined\n");
-   fprintf(stdout, "results in the subsequent file.\n");
-   fprintf(stdout, "The raw file produced contains all the files. Each image in the files will be of size\n");
-   fprintf(stdout, "width*height*1.5, unless width and/or height are not divisible by 16. Use the image size\n");
-   fprintf(stdout, "displayed during the run (in verbose mode) for an accurate value\n");
-
-   fprintf(stdout, "The Linux split command can be used to split up the file to individual frames\n");
-
-   fprintf(stdout, "\nusage: %s [options]\n\n", app_name);
-
-   fprintf(stdout, "Image parameter commands\n\n");
-
-   raspicli_display_help(cmdline_commands, cmdline_commands_size);
-
-   fprintf(stdout, "\n");
-
-   // Help for preview options
-   raspipreview_display_help();
-
-   // Now display any help information from the camcontrol code
-   raspicamcontrol_display_help();
-
-   fprintf(stdout, "\n");
-
-   return;
-}
-
-/**
  *  buffer header callback function for camera control
  *
  *  Callback will dump buffer data to the specific file
@@ -692,149 +607,6 @@ static void camera_control_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buf
    mmal_buffer_header_release(buffer);
 }
 
-
-/**
- * Open a file based on the settings in state
- *
- * @param state Pointer to state
- */
-static FILE *open_filename(RASPIVIDYUV_STATE *pState, char *filename)
-{
-   FILE *new_handle = NULL;
-
-   if (filename)
-   {
-      bool bNetwork = false;
-      int sfd = -1, socktype;
-
-      if(!strncmp("tcp://", filename, 6))
-      {
-         bNetwork = true;
-         socktype = SOCK_STREAM;
-      }
-      else if(!strncmp("udp://", filename, 6))
-      {
-         if (pState->netListen)
-         {
-            fprintf(stderr, "No support for listening in UDP mode\n");
-            exit(131);
-         }
-         bNetwork = true;
-         socktype = SOCK_DGRAM;
-      }
-
-      if(bNetwork)
-      {
-         unsigned short port;
-         filename += 6;
-         char *colon;
-         if(NULL == (colon = strchr(filename, ':')))
-         {
-            fprintf(stderr, "%s is not a valid IPv4:port, use something like tcp://1.2.3.4:1234 or udp://1.2.3.4:1234\n",
-                    filename);
-            exit(132);
-         }
-         if(1 != sscanf(colon + 1, "%hu", &port))
-         {
-            fprintf(stderr,
-                    "Port parse failed. %s is not a valid network file name, use something like tcp://1.2.3.4:1234 or udp://1.2.3.4:1234\n",
-                    filename);
-            exit(133);
-         }
-         char chTmp = *colon;
-         *colon = 0;
-
-         struct sockaddr_in saddr={};
-         saddr.sin_family = AF_INET;
-         saddr.sin_port = htons(port);
-         if(0 == inet_aton(filename, &saddr.sin_addr))
-         {
-            fprintf(stderr, "inet_aton failed. %s is not a valid IPv4 address\n",
-                    filename);
-            exit(134);
-         }
-         *colon = chTmp;
-
-         if (pState->netListen)
-         {
-            int sockListen = socket(AF_INET, SOCK_STREAM, 0);
-            if (sockListen >= 0)
-            {
-               int iTmp = 1;
-               setsockopt(sockListen, SOL_SOCKET, SO_REUSEADDR, &iTmp, sizeof(int));//no error handling, just go on
-               if (bind(sockListen, (struct sockaddr *) &saddr, sizeof(saddr)) >= 0)
-               {
-                  while ((-1 == (iTmp = listen(sockListen, 0))) && (EINTR == errno))
-                     ;
-                  if (-1 != iTmp)
-                  {
-                     fprintf(stderr, "Waiting for a TCP connection on %s:%"SCNu16"...",
-                             inet_ntoa(saddr.sin_addr), ntohs(saddr.sin_port));
-                     struct sockaddr_in cli_addr;
-                     socklen_t clilen = sizeof(cli_addr);
-                     while ((-1 == (sfd = accept(sockListen, (struct sockaddr *) &cli_addr, &clilen))) && (EINTR == errno))
-                        ;
-                     if (sfd >= 0)
-                        fprintf(stderr, "Client connected from %s:%"SCNu16"\n", inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port));
-                     else
-                        fprintf(stderr, "Error on accept: %s\n", strerror(errno));
-                  }
-                  else//if (-1 != iTmp)
-                  {
-                     fprintf(stderr, "Error trying to listen on a socket: %s\n", strerror(errno));
-                  }
-               }
-               else//if (bind(sockListen, (struct sockaddr *) &saddr, sizeof(saddr)) >= 0)
-               {
-                  fprintf(stderr, "Error on binding socket: %s\n", strerror(errno));
-               }
-            }
-            else//if (sockListen >= 0)
-            {
-               fprintf(stderr, "Error creating socket: %s\n", strerror(errno));
-            }
-
-            if (sockListen >= 0)//regardless success or error
-               close(sockListen);//do not listen on a given port anymore
-         }
-         else//if (pState->netListen)
-         {
-            if(0 <= (sfd = socket(AF_INET, socktype, 0)))
-            {
-               fprintf(stderr, "Connecting to %s:%hu...", inet_ntoa(saddr.sin_addr), port);
-
-               int iTmp = 1;
-               while ((-1 == (iTmp = connect(sfd, (struct sockaddr *) &saddr, sizeof(struct sockaddr_in)))) && (EINTR == errno))
-                  ;
-               if (iTmp < 0)
-                  fprintf(stderr, "error: %s\n", strerror(errno));
-               else
-                  fprintf(stderr, "connected, sending video...\n");
-            }
-            else
-               fprintf(stderr, "Error creating socket: %s\n", strerror(errno));
-         }
-
-         if (sfd >= 0)
-            new_handle = fdopen(sfd, "w");
-      }
-      else
-      {
-         new_handle = fopen(filename, "wb");
-      }
-   }
-
-   if (pState->verbose)
-   {
-      if (new_handle)
-         fprintf(stderr, "Opening output file \"%s\"\n", filename);
-      else
-         fprintf(stderr, "Failed to open new file \"%s\"\n", filename);
-   }
-
-   return new_handle;
-}
-
 /**
  *  buffer header callback function for camera
  *
@@ -864,19 +636,13 @@ static void camera_buffer_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buff
       if (pData->pstate->onlyLuma)
          bytes_to_write = vcos_min(buffer->length, port->format->es->video.width * port->format->es->video.height);
 
-      vcos_assert(pData->file_handle);
 
       if (bytes_to_write)
       {
          mmal_buffer_header_mem_lock(buffer);
-         bytes_written = fwrite(buffer->data, 1, bytes_to_write, pData->file_handle);
+         printf("buffer %d\n",buffer);
          mmal_buffer_header_mem_unlock(buffer);
 
-         if (bytes_written != bytes_to_write)
-         {
-            vcos_log_error("Failed to write buffer data (%d from %d)- aborting", bytes_written, bytes_to_write);
-            pData->abort = 1;
-         }
       }
    }
    else
@@ -915,7 +681,7 @@ static MMAL_STATUS_T create_camera_component(RASPIVIDYUV_STATE *state)
 {
    MMAL_COMPONENT_T *camera = 0;
    MMAL_ES_FORMAT_T *format;
-   MMAL_PORT_T *preview_port = NULL, *video_port = NULL, *still_port = NULL;
+   MMAL_PORT_T *preview_port = NULL, *video_port = NULL;
    MMAL_STATUS_T status;
    MMAL_POOL_T *pool;
 
@@ -956,7 +722,6 @@ static MMAL_STATUS_T create_camera_component(RASPIVIDYUV_STATE *state)
 
    preview_port = camera->output[MMAL_CAMERA_PREVIEW_PORT];
    video_port = camera->output[MMAL_CAMERA_VIDEO_PORT];
-   still_port = camera->output[MMAL_CAMERA_CAPTURE_PORT];
 
    if (state->settings)
    {
@@ -1065,16 +830,8 @@ static MMAL_STATUS_T create_camera_component(RASPIVIDYUV_STATE *state)
         mmal_port_parameter_set(video_port, &fps_range.hdr);
    }
 
-   if (state->useRGB)
-   {
-      format->encoding = mmal_util_rgb_order_fixed(still_port) ? MMAL_ENCODING_RGB24 : MMAL_ENCODING_BGR24;
-      format->encoding_variant = 0;  //Irrelevant when not in opaque mode
-   }
-   else
-   {
-      format->encoding = MMAL_ENCODING_I420;
-      format->encoding_variant = MMAL_ENCODING_I420;
-   }
+   format->encoding = MMAL_ENCODING_I420;
+   format->encoding_variant = MMAL_ENCODING_I420;
 
    format->es->video.width = VCOS_ALIGN_UP(state->width, 32);
    format->es->video.height = VCOS_ALIGN_UP(state->height, 16);
@@ -1104,34 +861,6 @@ static MMAL_STATUS_T create_camera_component(RASPIVIDYUV_STATE *state)
       goto error;
    }
 
-   // Set the encode format on the still  port
-
-   format = still_port->format;
-
-   format->encoding = MMAL_ENCODING_OPAQUE;
-   format->encoding_variant = MMAL_ENCODING_I420;
-
-   format->es->video.width = VCOS_ALIGN_UP(state->width, 32);
-   format->es->video.height = VCOS_ALIGN_UP(state->height, 16);
-   format->es->video.crop.x = 0;
-   format->es->video.crop.y = 0;
-   format->es->video.crop.width = state->width;
-   format->es->video.crop.height = state->height;
-   format->es->video.frame_rate.num = 0;
-   format->es->video.frame_rate.den = 1;
-
-   status = mmal_port_format_commit(still_port);
-
-   if (status != MMAL_SUCCESS)
-   {
-      vcos_log_error("camera still format couldn't be set");
-      goto error;
-   }
-
-   /* Ensure there are enough buffers to avoid dropping frames */
-   if (still_port->buffer_num < VIDEO_OUTPUT_BUFFERS_NUM)
-      still_port->buffer_num = VIDEO_OUTPUT_BUFFERS_NUM;
-
    /* Enable component */
    status = mmal_component_enable(camera);
 
@@ -1148,7 +877,7 @@ static MMAL_STATUS_T create_camera_component(RASPIVIDYUV_STATE *state)
 
    if (!pool)
    {
-      vcos_log_error("Failed to create buffer header pool for camera still port %s", still_port->name);
+      vcos_log_error("Failed to create buffer header pool for camera still port %s", video_port->name);
    }
 
    state->camera_pool = pool;
@@ -1380,7 +1109,6 @@ int main(int argc, const char **argv)
    MMAL_STATUS_T status = MMAL_SUCCESS;
    MMAL_PORT_T *camera_preview_port = NULL;
    MMAL_PORT_T *camera_video_port = NULL;
-   MMAL_PORT_T *camera_still_port = NULL;
    MMAL_PORT_T *preview_input_port = NULL;
 
    bcm_host_init();
@@ -1400,7 +1128,6 @@ int main(int argc, const char **argv)
    {
       fprintf(stdout, "\n%s Camera App %s\n\n", basename(argv[0]), VERSION_STRING);
 
-      display_valid_parameters(basename(argv[0]));
       exit(EX_USAGE);
    }
 
@@ -1414,7 +1141,6 @@ int main(int argc, const char **argv)
    if (state.verbose)
    {
       fprintf(stderr, "\n%s Camera App %s\n\n", basename(argv[0]), VERSION_STRING);
-      dump_status(&state);
    }
 
    // OK, we have a nice set of parameters. Now set up our components
@@ -1438,7 +1164,7 @@ int main(int argc, const char **argv)
 
       camera_preview_port = state.camera_component->output[MMAL_CAMERA_PREVIEW_PORT];
       camera_video_port   = state.camera_component->output[MMAL_CAMERA_VIDEO_PORT];
-      camera_still_port   = state.camera_component->output[MMAL_CAMERA_CAPTURE_PORT];
+      camera_video_port   = state.camera_component->output[MMAL_CAMERA_VIDEO_PORT];
       preview_input_port  = state.preview_parameters.preview_component->input[0];
 
       if (state.preview_parameters.wantPreview )
@@ -1463,50 +1189,7 @@ int main(int argc, const char **argv)
       if (status == MMAL_SUCCESS)
       {
          state.callback_data.file_handle = NULL;
-
-         if (state.filename)
-         {
-            if (state.filename[0] == '-')
-            {
-               state.callback_data.file_handle = stdout;
-
-               // Ensure we don't upset the output stream with diagnostics/info
-               state.verbose = 0;
-            }
-            else
-            {
-               state.callback_data.file_handle = open_filename(&state, state.filename);
-            }
-
-            if (!state.callback_data.file_handle)
-            {
-               // Notify user, carry on but discarding output buffers
-               vcos_log_error("%s: Error opening output file: %s\nNo output file will be generated\n", __func__, state.filename);
-            }
-         }
-
          state.callback_data.pts_file_handle = NULL;
-
-         if (state.pts_filename)
-         {
-            if (state.pts_filename[0] == '-')
-            {
-               state.callback_data.pts_file_handle = stdout;
-            }
-            else
-            {
-               state.callback_data.pts_file_handle = open_filename(&state, state.pts_filename);
-               if (state.callback_data.pts_file_handle) /* save header for mkvmerge */
-                  fprintf(state.callback_data.pts_file_handle, "# timecode format v2\n");
-            }
-
-            if (!state.callback_data.pts_file_handle)
-            {
-               // Notify user, carry on but discarding encoded output buffers
-               fprintf(stderr, "Error opening output file: %s\nNo output file will be generated\n",state.pts_filename);
-               state.save_pts=0;
-            }
-         }
 
          // Set up our userdata - this is passed though to the callback where we need the information.
          state.callback_data.pstate = &state;
@@ -1526,26 +1209,10 @@ int main(int argc, const char **argv)
             goto error;
          }
 
-         if (state.demoMode)
-         {
-            // Run for the user specific time..
-            int num_iterations = state.timeout / state.demoInterval;
-            int i;
 
-            if (state.verbose)
-               fprintf(stderr, "Running in demo mode\n");
-
-            for (i=0;state.timeout == 0 || i<num_iterations;i++)
-            {
-               raspicamcontrol_cycle_test(state.camera_component);
-               vcos_sleep(state.demoInterval);
-            }
-         }
-         else
          {
             // Only save stuff if we have a filename and it opened
             // Note we use the file handle copy in the callback, as the call back MIGHT change the file handle
-            if (state.callback_data.file_handle)
             {
                int running = 1;
 
@@ -1590,17 +1257,7 @@ int main(int argc, const char **argv)
                if (state.verbose)
                   fprintf(stderr, "Finished capture\n");
             }
-            else
-            {
-               if (state.timeout)
-                  vcos_sleep(state.timeout);
-               else
-               {
-                  // timeout = 0 so run forever
-                  while(1)
-                     vcos_sleep(ABORT_INTERVAL);
-               }
-            }
+
          }
       }
       else
@@ -1616,8 +1273,6 @@ error:
       if (state.verbose)
          fprintf(stderr, "Closing down\n");
 
-      // Disable all our ports that are not handled by connections
-      check_disable_port(camera_still_port);
 
       if (state.preview_parameters.wantPreview && state.preview_connection)
          mmal_connection_destroy(state.preview_connection);
@@ -1647,5 +1302,3 @@ error:
 
    return exit_code;
 }
-
-
