@@ -299,6 +299,60 @@ RaspiVidYUV.c.s:
 	cd /home/pi/repos/userland && $(MAKE) -f host_applications/linux/apps/raspicam/CMakeFiles/raspividyuv.dir/build.make host_applications/linux/apps/raspicam/CMakeFiles/raspividyuv.dir/RaspiVidYUV.c.s
 .PHONY : RaspiVidYUV.c.s
 
+headtracking/capture_handler.o: headtracking/capture_handler.c.o
+
+.PHONY : headtracking/capture_handler.o
+
+# target to build an object file
+headtracking/capture_handler.c.o:
+	cd /home/pi/repos/userland && $(MAKE) -f host_applications/linux/apps/raspicam/CMakeFiles/raspividyuv.dir/build.make host_applications/linux/apps/raspicam/CMakeFiles/raspividyuv.dir/headtracking/capture_handler.c.o
+.PHONY : headtracking/capture_handler.c.o
+
+headtracking/capture_handler.i: headtracking/capture_handler.c.i
+
+.PHONY : headtracking/capture_handler.i
+
+# target to preprocess a source file
+headtracking/capture_handler.c.i:
+	cd /home/pi/repos/userland && $(MAKE) -f host_applications/linux/apps/raspicam/CMakeFiles/raspividyuv.dir/build.make host_applications/linux/apps/raspicam/CMakeFiles/raspividyuv.dir/headtracking/capture_handler.c.i
+.PHONY : headtracking/capture_handler.c.i
+
+headtracking/capture_handler.s: headtracking/capture_handler.c.s
+
+.PHONY : headtracking/capture_handler.s
+
+# target to generate assembly for a file
+headtracking/capture_handler.c.s:
+	cd /home/pi/repos/userland && $(MAKE) -f host_applications/linux/apps/raspicam/CMakeFiles/raspividyuv.dir/build.make host_applications/linux/apps/raspicam/CMakeFiles/raspividyuv.dir/headtracking/capture_handler.c.s
+.PHONY : headtracking/capture_handler.c.s
+
+headtracking/mailbox.o: headtracking/mailbox.c.o
+
+.PHONY : headtracking/mailbox.o
+
+# target to build an object file
+headtracking/mailbox.c.o:
+	cd /home/pi/repos/userland && $(MAKE) -f host_applications/linux/apps/raspicam/CMakeFiles/raspividyuv.dir/build.make host_applications/linux/apps/raspicam/CMakeFiles/raspividyuv.dir/headtracking/mailbox.c.o
+.PHONY : headtracking/mailbox.c.o
+
+headtracking/mailbox.i: headtracking/mailbox.c.i
+
+.PHONY : headtracking/mailbox.i
+
+# target to preprocess a source file
+headtracking/mailbox.c.i:
+	cd /home/pi/repos/userland && $(MAKE) -f host_applications/linux/apps/raspicam/CMakeFiles/raspividyuv.dir/build.make host_applications/linux/apps/raspicam/CMakeFiles/raspividyuv.dir/headtracking/mailbox.c.i
+.PHONY : headtracking/mailbox.c.i
+
+headtracking/mailbox.s: headtracking/mailbox.c.s
+
+.PHONY : headtracking/mailbox.s
+
+# target to generate assembly for a file
+headtracking/mailbox.c.s:
+	cd /home/pi/repos/userland && $(MAKE) -f host_applications/linux/apps/raspicam/CMakeFiles/raspividyuv.dir/build.make host_applications/linux/apps/raspicam/CMakeFiles/raspividyuv.dir/headtracking/mailbox.c.s
+.PHONY : headtracking/mailbox.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -326,6 +380,12 @@ help:
 	@echo "... RaspiVidYUV.o"
 	@echo "... RaspiVidYUV.i"
 	@echo "... RaspiVidYUV.s"
+	@echo "... headtracking/capture_handler.o"
+	@echo "... headtracking/capture_handler.i"
+	@echo "... headtracking/capture_handler.s"
+	@echo "... headtracking/mailbox.o"
+	@echo "... headtracking/mailbox.i"
+	@echo "... headtracking/mailbox.s"
 .PHONY : help
 
 

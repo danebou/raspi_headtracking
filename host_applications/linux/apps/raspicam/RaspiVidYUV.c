@@ -50,8 +50,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 // We use some GNU extensions (basename)
-#define _GNU_SOURCE
-
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,7 +58,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sysexits.h>
 
 #include <sys/types.h>
-#include <sys/socket.h>
+#include <sys/time.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -68,6 +66,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "bcm_host.h"
 #include "interface/vcos/vcos.h"
+
+#include "headtracking/capture_handler.h"
 
 #include "interface/mmal/mmal.h"
 #include "interface/mmal/mmal_logging.h"
@@ -173,79 +173,31 @@ struct RASPIVIDYUV_STATE_S
    bool netListen;
 };
 
-static XREF_T  initial_map[] =
+static void update_fps()
 {
-   {"record",     0},
-   {"pause",      1},
-};
+   static int frame_count = 0;
+   static long long time_start = 0;
+   long long time_now;
+   struct timeval te;
+   float fps;
 
-static int initial_map_size = sizeof(initial_map) / sizeof(initial_map[0]);
+   frame_count++;
 
+   gettimeofday(&te, NULL);
+   time_now = te.tv_sec * 1000LL + te.tv_usec / 1000;
 
-
-/// Command ID's and Structure defining our command line options
-#define CommandHelp         0
-#define CommandWidth        1
-#define CommandHeight       2
-#define CommandOutput       3
-#define CommandVerbose      4
-#define CommandTimeout      5
-#define CommandDemoMode     6
-#define CommandFramerate    7
-#define CommandTimed        8
-#define CommandSignal       9
-#define CommandKeypress     10
-#define CommandInitialState 11
-#define CommandCamSelect    12
-#define CommandSettings     13
-#define CommandSensorMode   14
-#define CommandOnlyLuma     15
-#define CommandUseRGB       16
-#define CommandSavePTS      17
-#define CommandNetListen    18
-
-static COMMAND_LIST cmdline_commands[] =
-{
-   { CommandHelp,          "-help",       "?",  "This help information", 0 },
-   { CommandWidth,         "-width",      "w",  "Set image width <size>. Default 1920", 1 },
-   { CommandHeight,        "-height",     "h",  "Set image height <size>. Default 1080", 1 },
-   { CommandOutput,        "-output",     "o",  "Output filename <filename> (to write to stdout, use '-o -')", 1 },
-   { CommandVerbose,       "-verbose",    "v",  "Output verbose information during run", 0 },
-   { CommandTimeout,       "-timeout",    "t",  "Time (in ms) to capture for. If not specified, set to 5s. Zero to disable", 1 },
-   { CommandDemoMode,      "-demo",       "d",  "Run a demo mode (cycle through range of camera options, no capture)", 1},
-   { CommandFramerate,     "-framerate",  "fps","Specify the frames per second to record", 1},
-   { CommandTimed,         "-timed",      "td", "Cycle between capture and pause. -cycle on,off where on is record time and off is pause time in ms", 0},
-   { CommandSignal,        "-signal",     "s",  "Cycle between capture and pause on Signal", 0},
-   { CommandKeypress,      "-keypress",   "k",  "Cycle between capture and pause on ENTER", 0},
-   { CommandInitialState,  "-initial",    "i",  "Initial state. Use 'record' or 'pause'. Default 'record'", 1},
-   { CommandCamSelect,     "-camselect",  "cs", "Select camera <number>. Default 0", 1 },
-   { CommandSettings,      "-settings",   "set","Retrieve camera settings and write to stdout", 0},
-   { CommandSensorMode,    "-mode",       "md", "Force sensor mode. 0=auto. See docs for other modes available", 1},
-   { CommandOnlyLuma,      "-luma",       "y",  "Only output the luma / Y of the YUV data'", 0},
-   { CommandUseRGB,        "-rgb",        "rgb","Save as RGB data rather than YUV", 0},
-   { CommandSavePTS,       "-save-pts",   "pts","Save Timestamps to file", 1 },
-   { CommandNetListen,     "-listen",     "l", "Listen on a TCP socket", 0},
-};
-
-static int cmdline_commands_size = sizeof(cmdline_commands) / sizeof(cmdline_commands[0]);
-
-
-static struct
-{
-   char *description;
-   int nextWaitMethod;
-} wait_method_description[] =
-{
-      {"Simple capture",         WAIT_METHOD_NONE},
-      {"Capture forever",        WAIT_METHOD_FOREVER},
-      {"Cycle on time",          WAIT_METHOD_TIMED},
-      {"Cycle on keypress",      WAIT_METHOD_KEYPRESS},
-      {"Cycle on signal",        WAIT_METHOD_SIGNAL},
-};
-
-static int wait_method_description_size = sizeof(wait_method_description) / sizeof(wait_method_description[0]);
-
-
+   if (time_start == 0)
+   {
+      time_start = time_now;
+   }
+   else if (time_now - time_start > 500)
+   {
+      fps = (float) frame_count / ((time_now - time_start) / 1000.0);
+      frame_count = 0;
+      time_start = time_now;
+      printf("%3.2f FPS\n", fps);
+   }
+}
 
 /**
  * Assign a default set of parameters to the state passed in
@@ -286,284 +238,6 @@ static void default_status(RASPIVIDYUV_STATE *state)
 
    // Set up the camera_parameters to default
    raspicamcontrol_set_defaults(&state->camera_parameters);
-}
-
-/**
- * Parse the incoming command line and put resulting parameters in to the state
- *
- * @param argc Number of arguments in command line
- * @param argv Array of pointers to strings from command line
- * @param state Pointer to state structure to assign any discovered parameters to
- * @return Non-0 if failed for some reason, 0 otherwise
- */
-static int parse_cmdline(int argc, const char **argv, RASPIVIDYUV_STATE *state)
-{
-   // Parse the command line arguments.
-   // We are looking for --<something> or -<abbreviation of something>
-
-   int valid = 1;
-   int i;
-
-   for (i = 1; i < argc && valid; i++)
-   {
-      int command_id, num_parameters;
-
-      if (!argv[i])
-         continue;
-
-      if (argv[i][0] != '-')
-      {
-         valid = 0;
-         continue;
-      }
-
-      // Assume parameter is valid until proven otherwise
-      valid = 1;
-
-      command_id = raspicli_get_command_id(cmdline_commands, cmdline_commands_size, &argv[i][1], &num_parameters);
-
-      // If we found a command but are missing a parameter, continue (and we will drop out of the loop)
-      if (command_id != -1 && num_parameters > 0 && (i + 1 >= argc) )
-         continue;
-
-      //  We are now dealing with a command line option
-      switch (command_id)
-      {
-      case CommandHelp:
-         return -1;
-
-      case CommandWidth: // Width > 0
-         if (sscanf(argv[i + 1], "%u", &state->width) != 1)
-            valid = 0;
-         else
-            i++;
-         break;
-
-      case CommandHeight: // Height > 0
-         if (sscanf(argv[i + 1], "%u", &state->height) != 1)
-            valid = 0;
-         else
-            i++;
-         break;
-
-      case CommandOutput:  // output filename
-      {
-         int len = strlen(argv[i + 1]);
-         if (len)
-         {
-            state->filename = malloc(len + 1);
-            vcos_assert(state->filename);
-            if (state->filename)
-               strncpy(state->filename, argv[i + 1], len+1);
-            i++;
-         }
-         else
-            valid = 0;
-         break;
-      }
-
-      case CommandVerbose: // display lots of data during run
-         state->verbose = 1;
-         break;
-
-      case CommandTimeout: // Time to run viewfinder/capture
-      {
-         if (sscanf(argv[i + 1], "%u", &state->timeout) == 1)
-         {
-            // Ensure that if previously selected a waitMethod we don't overwrite it
-            if (state->timeout == 0 && state->waitMethod == WAIT_METHOD_NONE)
-               state->waitMethod = WAIT_METHOD_FOREVER;
-
-            i++;
-         }
-         else
-            valid = 0;
-         break;
-      }
-
-      case CommandDemoMode: // Run in demo mode - no capture
-      {
-         // Demo mode might have a timing parameter
-         // so check if a) we have another parameter, b) its not the start of the next option
-         if (i + 1 < argc  && argv[i+1][0] != '-')
-         {
-            if (sscanf(argv[i + 1], "%u", &state->demoInterval) == 1)
-            {
-               // TODO : What limits do we need for timeout?
-               if (state->demoInterval == 0)
-                  state->demoInterval = 250; // ms
-
-               state->demoMode = 1;
-               i++;
-            }
-            else
-               valid = 0;
-         }
-         else
-         {
-            state->demoMode = 1;
-         }
-
-         break;
-      }
-
-      case CommandFramerate: // fps to record
-      {
-         if (sscanf(argv[i + 1], "%u", &state->framerate) == 1)
-         {
-            // TODO : What limits do we need for fps 1 - 30 - 120??
-            i++;
-         }
-         else
-            valid = 0;
-         break;
-      }
-
-      case CommandTimed:
-      {
-         if (sscanf(argv[i + 1], "%u,%u", &state->onTime, &state->offTime) == 2)
-         {
-            i++;
-
-            if (state->onTime < 1000)
-               state->onTime = 1000;
-
-            if (state->offTime < 1000)
-               state->offTime = 1000;
-
-            state->waitMethod = WAIT_METHOD_TIMED;
-         }
-         else
-            valid = 0;
-         break;
-      }
-
-      case CommandKeypress:
-         state->waitMethod = WAIT_METHOD_KEYPRESS;
-         break;
-
-      case CommandSignal:
-         state->waitMethod = WAIT_METHOD_SIGNAL;
-         // Reenable the signal
-         signal(SIGUSR1, signal_handler);
-         break;
-
-      case CommandInitialState:
-      {
-         state->bCapturing = raspicli_map_xref(argv[i + 1], initial_map, initial_map_size);
-
-         if( state->bCapturing == -1)
-            state->bCapturing = 0;
-
-         i++;
-         break;
-      }
-
-      case CommandCamSelect:  //Select camera input port
-      {
-         if (sscanf(argv[i + 1], "%u", &state->cameraNum) == 1)
-         {
-            i++;
-         }
-         else
-            valid = 0;
-         break;
-      }
-
-      case CommandSettings:
-         state->settings = 1;
-         break;
-
-      case CommandSensorMode:
-      {
-         if (sscanf(argv[i + 1], "%u", &state->sensor_mode) == 1)
-         {
-            i++;
-         }
-         else
-            valid = 0;
-         break;
-      }
-
-      case CommandOnlyLuma:
-         if (state->useRGB)
-         {
-            fprintf(stderr, "--luma and --rgb are mutually exclusive\n");
-            valid = 0;
-         }
-         state->onlyLuma = 1;
-         break;
-
-      case CommandUseRGB: // display lots of data during run
-         if (state->onlyLuma)
-         {
-            fprintf(stderr, "--luma and --rgb are mutually exclusive\n");
-            valid = 0;
-         }
-         state->useRGB = 1;
-         break;
-
-      case CommandSavePTS:  // output filename
-      {
-         state->save_pts = 1;
-         int len = strlen(argv[i + 1]);
-         if (len)
-         {
-            state->pts_filename = malloc(len + 1);
-            vcos_assert(state->pts_filename);
-            if (state->pts_filename)
-               strncpy(state->pts_filename, argv[i + 1], len+1);
-            i++;
-         }
-         else
-            valid = 0;
-         break;
-      }
-
-      case CommandNetListen:
-      {
-         state->netListen = true;
-
-         break;
-      }
-
-      default:
-      {
-         // Try parsing for any image specific parameters
-         // result indicates how many parameters were used up, 0,1,2
-         // but we adjust by -1 as we have used one already
-         const char *second_arg = (i + 1 < argc) ? argv[i + 1] : NULL;
-         int parms_used = (raspicamcontrol_parse_cmdline(&state->camera_parameters, &argv[i][1], second_arg));
-
-         // Still unused, try preview options
-         if (!parms_used)
-            parms_used = raspipreview_parse_cmdline(&state->preview_parameters, &argv[i][1], second_arg);
-
-
-         // If no parms were used, this must be a bad parameters
-         if (!parms_used)
-            valid = 0;
-         else
-            i += parms_used - 1;
-
-         break;
-      }
-      }
-   }
-
-   if (!valid)
-   {
-      fprintf(stderr, "Invalid command line option (%s)\n", argv[i-1]);
-      return 1;
-   }
-
-   // Always disable verbose if output going to stdout
-   if (state->filename && state->filename[0] == '-')
-   {
-      state->verbose = 0;
-   }
-
-   return 0;
 }
 
 /**
@@ -630,7 +304,6 @@ static void camera_buffer_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buff
 
    if (pData)
    {
-      int bytes_written = 0;
       int bytes_to_write = buffer->length;
 
       if (pData->pstate->onlyLuma)
@@ -640,9 +313,11 @@ static void camera_buffer_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buff
       if (bytes_to_write)
       {
          mmal_buffer_header_mem_lock(buffer);
-         printf("buffer %d\n",buffer);
-         mmal_buffer_header_mem_unlock(buffer);
+         handle_capture(buffer->data, port->format->es->video.width,
+           port->format->es->video.height,bytes_to_write);
 
+         mmal_buffer_header_mem_unlock(buffer);
+         update_fps();
       }
    }
    else
@@ -938,18 +613,6 @@ static MMAL_STATUS_T connect_ports(MMAL_PORT_T *output_port, MMAL_PORT_T *input_
 }
 
 /**
- * Checks if specified port is valid and enabled, then disables it
- *
- * @param port  Pointer the port
- *
- */
-static void check_disable_port(MMAL_PORT_T *port)
-{
-   if (port && port->is_enabled)
-      mmal_port_disable(port);
-}
-
-/**
  * Handler for sigint signals
  *
  * @param signal_number ID of incoming signal.
@@ -1112,6 +775,7 @@ int main(int argc, const char **argv)
    MMAL_PORT_T *preview_input_port = NULL;
 
    bcm_host_init();
+   ch_init();
 
    // Register our application with the logging system
    vcos_log_register("RaspiVid", VCOS_LOG_CATEGORY);
@@ -1122,21 +786,6 @@ int main(int argc, const char **argv)
    signal(SIGUSR1, SIG_IGN);
 
    default_status(&state);
-
-   // Do we have any parameters
-   if (argc == 1)
-   {
-      fprintf(stdout, "\n%s Camera App %s\n\n", basename(argv[0]), VERSION_STRING);
-
-      exit(EX_USAGE);
-   }
-
-   // Parse the command line and put options in to our status structure
-   if (parse_cmdline(argc, argv, &state))
-   {
-      status = -1;
-      exit(EX_USAGE);
-   }
 
    if (state.verbose)
    {
@@ -1299,6 +948,8 @@ error:
 
    if (status != MMAL_SUCCESS)
       raspicamcontrol_check_configuration(128);
+
+   ch_destroy();
 
    return exit_code;
 }

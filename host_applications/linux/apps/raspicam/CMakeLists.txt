@@ -12,7 +12,11 @@ set (COMMON_SOURCES
    RaspiCLI.c
    RaspiPreview.c)
 
-add_executable(raspividyuv  ${COMMON_SOURCES} RaspiVidYUV.c)
+set (HEADTRACKING_SOURCES
+    headtracking/capture_handler.c
+    headtracking/mailbox.c)
+
+add_executable(raspividyuv ${HEADTRACKING_SOURCES} ${COMMON_SOURCES} RaspiVidYUV.c)
 
 set (MMAL_LIBS mmal_core mmal_util mmal_vc_client)
 
