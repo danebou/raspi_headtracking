@@ -1,5 +1,5 @@
 #include <gtest\gtest.h>
-#include "utility\vector3f.h"
+#include "utility\Vector3f.h"
 
 // Tests initialization of a vector using the default constructor
 TEST(Vector3f, HandlesZeroInput)
@@ -39,3 +39,12 @@ TEST(Vector3f, Addition)
 	Vector3f result(5, 7, 9);
 	EXPECT_EQ(result, a + b);
 }
+
+// Tests vector addition
+/*TEST(Vector3f, ConstantMultiply)
+{
+	Vector3f a(1, 2, 3);
+	const float c = 2;
+	Vector3f result(2, 4, 6);
+	EXPECT_EQ(result, a * c);
+}*/
