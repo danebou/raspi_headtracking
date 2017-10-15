@@ -16,6 +16,12 @@ public:
 	public:
 		float x, y;
 		float size;
+
+		Marker(float x, float y, float size);
+		inline bool operator==(const Marker& rhs) const
+		{
+			return (x == rhs.x) && (y == rhs.y) && (size == rhs.size);
+		}
 	};
 
 	MarkerFinder()

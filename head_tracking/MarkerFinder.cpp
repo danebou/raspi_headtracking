@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include "MarkerFinder.h"
 #include <stdlib.h>
 #include <tuple>
@@ -14,6 +16,11 @@
 	6. subtact blob_width/2 towards center and return both trackers
 */
 
+MarkerFinder::Marker::Marker(float x, float y, float size)
+	: x(x), y(y), size(size)
+{
+}
+
 void MarkerFinder::FillChecked(const YUVImage & image, bool * checkarray,
 	Rectangle region, tuple<int, int> start)
 {
@@ -26,6 +33,9 @@ void MarkerFinder::FillChecked(const YUVImage & image, bool * checkarray,
 		int x = get<0>(next);
 		int y = get<1>(next);
 		locations.pop();
+
+		if (checkarray[x + y * region.width])
+			continue;
 
 		if (image.GetCoordinate(x, y).y >= intensityThreshold)
 		{
@@ -74,6 +84,10 @@ vector<tuple<int, int>> MarkerFinder::GetMarkerPixels(const YUVImage & image,
 		int y = get<1>(next);
 		locations.pop();
 
+		if (find(explored.begin(), explored.end(),
+			make_tuple(x, y)) != explored.end())
+			continue;
+
 		if (image.GetCoordinate(x, y).y >= intensityThreshold)
 		{
 			explored.push_back(make_tuple(x, y));
@@ -103,7 +117,7 @@ vector<tuple<int, int>> MarkerFinder::GetMarkerPixels(const YUVImage & image,
 		if (y + 1 < region.y + region.height)
 		{
 			if (find(explored.begin(), explored.end(),
-				make_tuple(x, y - 1)) == explored.end()
+				make_tuple(x, y + 1)) == explored.end()
 				&& image.GetCoordinate(x, y + 1).y >= intensityThreshold)
 				locations.push(make_tuple(x, y + 1));
 		}
@@ -116,7 +130,18 @@ MarkerFinder::Marker MarkerFinder::DefineMarker(const YUVImage & image,
 	Rectangle region, tuple<int, int> start)
 {
 	vector<tuple<int, int>> pixels = GetMarkerPixels(image, region, start);
-	return Marker();
+	float avgX = 0, avgY = 0, count = 0;
+	for (tuple<int, int> i : pixels)
+	{
+		avgX += get<0>(i);
+		avgY += get<1>(i);
+		count++;
+	}
+
+	avgX /= count;
+	avgY /= count;
+	float size = sqrtf(count / M_PI);
+	return Marker(avgX, avgY, size);
 }
 
 vector<MarkerFinder::Marker> MarkerFinder::FindMarkers(

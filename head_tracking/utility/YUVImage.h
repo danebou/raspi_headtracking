@@ -13,6 +13,13 @@ public:
     {
 	public:
         uint8_t y, u, v;
+
+		YUVCoord()
+		{
+			y = 0;
+			u = 0;
+			v = 0;
+		}
 		YUVCoord(uint8_t y, uint8_t u, uint8_t v)
 			: u(u), y(y), v(v)
 		{
