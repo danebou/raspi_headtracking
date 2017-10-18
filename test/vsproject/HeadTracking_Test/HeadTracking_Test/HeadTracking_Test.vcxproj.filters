@@ -16,13 +16,28 @@
     <Filter Include="Data">
       <UniqueIdentifier>{8f4f5bdf-f3e6-44a1-bcc4-6b9e826224f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\utility">
+      <UniqueIdentifier>{1659da49-5c08-41c9-afa3-15912922028d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\utility">
+      <UniqueIdentifier>{10a2a000-7499-47e5-9558-4c476be73122}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\tracking">
+      <UniqueIdentifier>{6dfbbf6c-2726-4a9e-b095-c543807ad10d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tracking">
+      <UniqueIdentifier>{5904cbda-5ef4-4c0d-8776-ed987c01d6d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tracking\epnp">
+      <UniqueIdentifier>{8140ee73-36b9-464c-a0ce-67ac9e512d26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\tracking\epnp">
+      <UniqueIdentifier>{f6443f55-3cd6-4e4d-aaba-efb09c3139fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\main.cpp">
       <Filter>Test Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\head_tracking\MarkerFinder.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\test_Vector3.cpp">
       <Filter>Test Files</Filter>
@@ -30,34 +45,82 @@
     <ClCompile Include="..\..\..\src\test_Rectangle.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\head_tracking\utility\Vector3f.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\head_tracking\utility\Rectangle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\head_tracking\utility\YUVImage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\test_MarkerFinder.cpp">
-      <Filter>Test Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\test_YUVImage.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\test_FeatureFinder.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_Quaternion.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\Controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\Calibrator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\utility\Rectangle.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\utility\Quarternion.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\utility\Vector3f.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\tracking\Feature.cpp">
+      <Filter>Source Files\tracking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\tracking\MarkerTracker.cpp">
+      <Filter>Source Files\tracking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\tracking\FeatureFinder.cpp">
+      <Filter>Source Files\tracking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\utility\YUVImage.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\tracking\epnp\mepnp.cpp">
+      <Filter>Source Files\tracking\epnp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\head_tracking\MarkerFinder.h">
+    <ClInclude Include="..\..\..\..\head_tracking\Calibrator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\head_tracking\utility\Rectangle.h">
+    <ClInclude Include="..\..\..\..\head_tracking\Controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\head_tracking\utility\Vector3f.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\head_tracking\utility\Rectangle.h">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\head_tracking\utility\Quarternion.h">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\head_tracking\tracking\Feature.h">
+      <Filter>Header Files\tracking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\head_tracking\MarkerTracker.h">
+      <Filter>Header Files\tracking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\head_tracking\tracking\MarkerTracker.h">
+      <Filter>Header Files\tracking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\head_tracking\tracking\FeatureFinder.h">
+      <Filter>Header Files\tracking</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\head_tracking\utility\YUVImage.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\head_tracking\tracking\epnp\precomp.hpp">
+      <Filter>Header Files\tracking\epnp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\head_tracking\tracking\epnp\mepnp.h">
+      <Filter>Header Files\tracking\epnp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

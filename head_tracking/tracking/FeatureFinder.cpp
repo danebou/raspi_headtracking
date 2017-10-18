@@ -1,27 +1,13 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
-#include "MarkerFinder.h"
+#include "FeatureFinder.h"
 #include <stdlib.h>
 #include <tuple>
 #include <queue>
 #include <unordered_map>
 #include <algorithm>
 
-/*
-	1. Find per
-	2. Find center
-	2. Find furthest point
-	4. Find Furthest point on opposite side
-	5. Somehow find width of blob?
-	6. subtact blob_width/2 towards center and return both trackers
-*/
-
-MarkerFinder::Marker::Marker(float x, float y, float size)
-	: x(x), y(y), size(size)
-{
-}
-
-void MarkerFinder::FillChecked(const YUVImage & image, bool * checkarray,
+void FeatureFinder::FillChecked(const YUVImage & image, bool * checkarray,
 	Rectangle region, tuple<int, int> start)
 {
 	// This function just fills in the rest, it will be optimized out later
@@ -69,7 +55,7 @@ void MarkerFinder::FillChecked(const YUVImage & image, bool * checkarray,
 	}
 }
 
-vector<tuple<int, int>> MarkerFinder::GetMarkerPixels(const YUVImage & image,
+vector<tuple<int, int>> FeatureFinder::GetFeaturePixels(const YUVImage & image,
 	Rectangle region, tuple<int, int> start)
 {
 	// This function just fills in the rest, it will be optimized out later
@@ -126,10 +112,10 @@ vector<tuple<int, int>> MarkerFinder::GetMarkerPixels(const YUVImage & image,
 	return explored;
 }
 
-MarkerFinder::Marker MarkerFinder::DefineMarker(const YUVImage & image,
+Feature FeatureFinder::DefineFeature(const YUVImage & image,
 	Rectangle region, tuple<int, int> start)
 {
-	vector<tuple<int, int>> pixels = GetMarkerPixels(image, region, start);
+	vector<tuple<int, int>> pixels = GetFeaturePixels(image, region, start);
 	float avgX = 0, avgY = 0, count = 0;
 	for (tuple<int, int> i : pixels)
 	{
@@ -140,17 +126,17 @@ MarkerFinder::Marker MarkerFinder::DefineMarker(const YUVImage & image,
 
 	avgX /= count;
 	avgY /= count;
-	float size = sqrtf(count / M_PI);
-	return Marker(avgX, avgY, size);
+	float size = sqrtf(count / (float) M_PI);
+	return Feature(avgX, avgY, size);
 }
 
-vector<MarkerFinder::Marker> MarkerFinder::FindMarkers(
+vector<Feature> FeatureFinder::FindFeatures(
 	const YUVImage & image, Rectangle region)
 {
-	vector<Marker> found;
+	vector<Feature> found;
 	bool * checked = (bool *) calloc(region.width * region.height, sizeof(bool));
 
-	// Search region for markers
+	// Search region for features
 	for (int y = region.y; y < region.height + region.y; y++)
 	{
 		for (int x = region.x; x < region.width + region.x; x++)
@@ -159,7 +145,7 @@ vector<MarkerFinder::Marker> MarkerFinder::FindMarkers(
 			{
 				if (!checked[x + y * region.width])
 				{
-					Marker m = DefineMarker(image, region, make_tuple(x, y));
+					Feature m = DefineFeature(image, region, make_tuple(x, y));
 					found.push_back(m);
 					FillChecked(image, checked, region, make_tuple(x, y));
 				}

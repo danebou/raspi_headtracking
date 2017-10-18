@@ -133,18 +133,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\head_tracking\MarkerFinder.cpp" />
+    <ClCompile Include="..\..\..\..\head_tracking\Calibrator.cpp" />
+    <ClCompile Include="..\..\..\..\head_tracking\Controller.cpp" />
+    <ClCompile Include="..\..\..\..\head_tracking\tracking\epnp\mepnp.cpp" />
+    <ClCompile Include="..\..\..\..\head_tracking\tracking\Feature.cpp" />
+    <ClCompile Include="..\..\..\..\head_tracking\tracking\FeatureFinder.cpp" />
+    <ClCompile Include="..\..\..\..\head_tracking\tracking\MarkerTracker.cpp" />
+    <ClCompile Include="..\..\..\..\head_tracking\utility\Quarternion.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\utility\Rectangle.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\utility\Vector3f.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\utility\YUVImage.cpp" />
     <ClCompile Include="..\..\..\src\main.cpp" />
-    <ClCompile Include="..\..\..\src\test_MarkerFinder.cpp" />
+    <ClCompile Include="..\..\..\src\test_FeatureFinder.cpp" />
+    <ClCompile Include="..\..\..\src\test_Quaternion.cpp" />
     <ClCompile Include="..\..\..\src\test_Rectangle.cpp" />
     <ClCompile Include="..\..\..\src\test_Vector3.cpp" />
     <ClCompile Include="..\..\..\src\test_YUVImage.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\head_tracking\MarkerFinder.h" />
+    <ClInclude Include="..\..\..\..\head_tracking\Calibrator.h" />
+    <ClInclude Include="..\..\..\..\head_tracking\Controller.h" />
+    <ClInclude Include="..\..\..\..\head_tracking\MarkerTracker.h" />
+    <ClInclude Include="..\..\..\..\head_tracking\tracking\epnp\mepnp.h" />
+    <ClInclude Include="..\..\..\..\head_tracking\tracking\epnp\precomp.hpp" />
+    <ClInclude Include="..\..\..\..\head_tracking\tracking\Feature.h" />
+    <ClInclude Include="..\..\..\..\head_tracking\tracking\FeatureFinder.h" />
+    <ClInclude Include="..\..\..\..\head_tracking\tracking\MarkerTracker.h" />
+    <ClInclude Include="..\..\..\..\head_tracking\utility\Quarternion.h" />
     <ClInclude Include="..\..\..\..\head_tracking\utility\Rectangle.h" />
     <ClInclude Include="..\..\..\..\head_tracking\utility\Vector3f.h" />
     <ClInclude Include="..\..\..\..\head_tracking\utility\YUVImage.h" />
