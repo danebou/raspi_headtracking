@@ -1,5 +1,6 @@
 #include "CommandParser.h"
 #include "com/COBS.h"
+#include <string.h>
 
 #define ToFloat(x) *((float *)&(x))
 
@@ -80,10 +81,11 @@ CommandParser::CommandError CommandParser::AddCalibration(const uint8_t data[], 
 
 CommandParser::CommandError CommandParser::ResetCalibration(const uint8_t data[], int dataLength)
 {
+	(void) data; // We are not using this arg
 	if (dataLength != 1)
 		return CommandError::UnexpectedLength;
 
-	int cameraNum = data[0];
+	//int cameraNum = data[0];
 
 	return CommandError::NoError;
 }

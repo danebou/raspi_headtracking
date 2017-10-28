@@ -1,5 +1,5 @@
 #include "MarkerTracker.h"
-#include "opencv2\opencv.hpp"
+//#include "opencv2\opencv.hpp"
 
 MarkerTracker::MarkerTracker()
 {
@@ -7,7 +7,7 @@ MarkerTracker::MarkerTracker()
 
 Transformation MarkerTracker::FindMarker(const YUVImage & image, Rectangle region)
 {
-
+	(void) region;
 	vector<Feature> features = ff.FindFeatures(image, Rectangle(0, 0, image.width, image.height));
 
 	//solveP3P()

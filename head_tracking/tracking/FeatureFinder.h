@@ -2,9 +2,9 @@
 #define MARKER_FINDER_H
 
 #include "Feature.h"
-#include "utility\Vector3f.h"
-#include "utility\YUVImage.h"
-#include "utility\Rectangle.h"
+#include "utility/Vector3f.h"
+#include "utility/YUVImage.h"
+#include "utility/Rectangle.h"
 #include <vector>
 
 using namespace std;
@@ -26,7 +26,7 @@ public:
 		Rectangle region, tuple<int, int> start);
 	vector<tuple<int, int>> GetFeaturePixels(const YUVImage & image,
 		Rectangle region, tuple<int, int> start);
-	bool FeatureFinder::DefineFeature(const YUVImage & image,
+	bool DefineFeature(const YUVImage & image,
 		Rectangle region, tuple<int, int> start, Feature * feature);
 private:
 };

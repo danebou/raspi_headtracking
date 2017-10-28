@@ -2,8 +2,8 @@
 	A 3D position and rotation
 */
 #pragma once
-#include "utility\Vector3f.h"
-#include "utility\Quarternion.h"
+#include "utility/Vector3f.h"
+#include "utility/Quarternion.h"
 
 class Transformation
 {

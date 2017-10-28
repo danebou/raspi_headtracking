@@ -3,10 +3,8 @@
 
 #include <stdint.h>
 #include <vector>
-#include <opencv2\core.hpp>
 
 using namespace std;
-using namespace cv;
 
 class YUVImage
 {
@@ -23,7 +21,7 @@ public:
 			v = 0;
 		}
 		YUVCoord(uint8_t y, uint8_t u, uint8_t v)
-			: u(u), y(y), v(v)
+			: y(y), u(u), v(v)
 		{
 		}
 	};

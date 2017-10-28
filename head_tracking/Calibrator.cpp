@@ -5,6 +5,8 @@ using namespace std;
 
 Calibrator::Calibrator()
 {
+	isCalibrated = false;
+	count = 0;
 }
 
 void Calibrator::Reset()

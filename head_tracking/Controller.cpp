@@ -4,19 +4,19 @@
 
 Controller::Controller()
 {
-	serial = new RpiSerial();
+	serial = RpiSerial();
 	calibrator = Calibrator();
-	cmdParser = new CommandParser(*this, *serial);
+	cmdParser = new CommandParser(*this, serial);
 }
 
 Controller::~Controller()
 {
 	delete cmdParser;
-	delete serial;
 }
 
 void Controller::ProcessCameraFrame(YUVImage image)
 {
+	(void) image;
 }
 
 void Controller::UpdatePosition(Vector3f position)
@@ -26,10 +26,12 @@ void Controller::UpdatePosition(Vector3f position)
 
 void Controller::ResetCalibration(int cameraNum)
 {
+	(void) cameraNum;
 	calibrator.Reset();
 }
 
 void Controller::AddCalibration(int cameraNum, Transformation t, float checkerSize)
 {
+	(void) cameraNum;
 	calibrator.Add(t, checkerSize);
 }

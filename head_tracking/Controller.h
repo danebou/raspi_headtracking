@@ -2,7 +2,7 @@
 #include "Calibrator.h"
 #include "utility/YUVImage.h"
 #include "utility/Transformation.h"
-#include "com/SerialInterface.h"
+#include "com/RpiSerial.h"
 #include "com/CommandParser.h"
 #include "ControllerInterface.h"
 
@@ -21,7 +21,7 @@ public:
 
 private:
 
-	SerialInterface * serial;
+	RpiSerial serial;
 	Calibrator calibrator;
 	CommandParser* cmdParser;
 
