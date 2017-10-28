@@ -112,22 +112,31 @@ vector<tuple<int, int>> FeatureFinder::GetFeaturePixels(const YUVImage & image,
 	return explored;
 }
 
-Feature FeatureFinder::DefineFeature(const YUVImage & image,
-	Rectangle region, tuple<int, int> start)
+bool FeatureFinder::DefineFeature(const YUVImage & image,
+	Rectangle region, tuple<int, int> start, Feature * feature)
 {
 	vector<tuple<int, int>> pixels = GetFeaturePixels(image, region, start);
 	float avgX = 0, avgY = 0, count = 0;
 	for (tuple<int, int> i : pixels)
 	{
-		avgX += get<0>(i);
-		avgY += get<1>(i);
+		int x = get<0>(i);
+		int y = get<1>(i);
+		if (x == region.x || y == region.y
+			|| x == region.x + region.width - 1
+			|| y == region.y + region.height - 1)
+		{
+			return false;
+		}
+		avgX += x;
+		avgY += y;
 		count++;
 	}
 
 	avgX /= count;
 	avgY /= count;
 	float size = sqrtf(count / (float) M_PI);
-	return Feature(avgX, avgY, size);
+	*feature = Feature(avgX, avgY, size);
+	return true;
 }
 
 vector<Feature> FeatureFinder::FindFeatures(
@@ -145,8 +154,9 @@ vector<Feature> FeatureFinder::FindFeatures(
 			{
 				if (!checked[x + y * region.width])
 				{
-					Feature m = DefineFeature(image, region, make_tuple(x, y));
-					found.push_back(m);
+					Feature m(0, 0, 0);
+					if (DefineFeature(image, region, make_tuple(x, y), &m))
+						found.push_back(m);
 					FillChecked(image, checked, region, make_tuple(x, y));
 				}
 			}

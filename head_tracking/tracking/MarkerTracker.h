@@ -3,6 +3,7 @@
 */
 #pragma once
 #include "FeatureFinder.h"
+#include "utility/Transformation.h"
 #include <vector>
 
 using namespace std;
@@ -12,7 +13,9 @@ class MarkerTracker
 public:
 	MarkerTracker();
 
+	Transformation FindMarker(const YUVImage & image, Rectangle region);
+
 private:
-	FeatureFinder featureFind;
+	FeatureFinder ff;
 };
 

@@ -1,5 +1,5 @@
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include <gmock\gmock.h>
+#include <gtest\gtest.h>
 #include "tracking/FeatureFinder.h"
 #include "tracking/Feature.h"
 #include <string>

@@ -1,29 +1,35 @@
 #include "Controller.h"
-
-enum class CommandType {
-	PositionData = 0x00,
-	PrenticeSync = 0x01,
-	SetEyeDistance = 0x00,
-	SetLatencyCompensation = 0x02,
-	MasterStartCalibrate = 0x01,
-	MasterAddCalbirate = 0x02,
-	PrenticeStartCalibrate = 0x02,
-	PrenticeAddCalbirate = 0x03,
-	PrenticeTrackingData = 0x00,
-	PrenticeTrackingSync = 0x00,
-	PrenticeGetCameraMatrix = 0x01,
-	PrenticeCameraMatrix = 0x02,
-};
+#include "com/RpiSerial.h"
+#include <thread>
 
 Controller::Controller()
 {
+	serial = new RpiSerial();
+	calibrator = Calibrator();
+	cmdParser = new CommandParser(*this, *serial);
 }
 
-void DoCommand(CommandType type)
+Controller::~Controller()
 {
-	switch (type)
-	{
-	case CommandType::PositionData:
-		break;
-	}
+	delete cmdParser;
+	delete serial;
+}
+
+void Controller::ProcessCameraFrame(YUVImage image)
+{
+}
+
+void Controller::UpdatePosition(Vector3f position)
+{
+	cmdParser->UpdatePosition(position);
+}
+
+void Controller::ResetCalibration(int cameraNum)
+{
+	calibrator.Reset();
+}
+
+void Controller::AddCalibration(int cameraNum, Transformation t, float checkerSize)
+{
+	calibrator.Add(t, checkerSize);
 }

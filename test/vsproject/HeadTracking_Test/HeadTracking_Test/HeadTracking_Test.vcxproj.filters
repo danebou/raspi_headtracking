@@ -28,24 +28,21 @@
     <Filter Include="Source Files\tracking">
       <UniqueIdentifier>{5904cbda-5ef4-4c0d-8776-ed987c01d6d0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\tracking\epnp">
-      <UniqueIdentifier>{8140ee73-36b9-464c-a0ce-67ac9e512d26}</UniqueIdentifier>
+    <Filter Include="Header Files\com">
+      <UniqueIdentifier>{88fd13e5-3eec-4d1c-bcfc-757af2ab15d8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\tracking\epnp">
-      <UniqueIdentifier>{f6443f55-3cd6-4e4d-aaba-efb09c3139fe}</UniqueIdentifier>
+    <Filter Include="Source Files\com">
+      <UniqueIdentifier>{497f524f-00e6-4f9c-bc3e-c66072628c41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mocks">
+      <UniqueIdentifier>{d5d70ae2-aec3-4fca-b687-038a84806fab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\main.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\test_Vector3.cpp">
-      <Filter>Test Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\test_Rectangle.cpp">
-      <Filter>Test Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\test_YUVImage.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\test_FeatureFinder.cpp">
@@ -60,13 +57,7 @@
     <ClCompile Include="..\..\..\..\head_tracking\Calibrator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\head_tracking\utility\Rectangle.cpp">
-      <Filter>Source Files\utility</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\head_tracking\utility\Quarternion.cpp">
-      <Filter>Source Files\utility</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\head_tracking\utility\Vector3f.cpp">
       <Filter>Source Files\utility</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\head_tracking\tracking\Feature.cpp">
@@ -81,8 +72,41 @@
     <ClCompile Include="..\..\..\..\head_tracking\utility\YUVImage.cpp">
       <Filter>Source Files\utility</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\head_tracking\tracking\epnp\mepnp.cpp">
-      <Filter>Source Files\tracking\epnp</Filter>
+    <ClCompile Include="..\..\..\src\test_MarkerTracker.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_YUVImage.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_Vector3.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\utility\Rectangle.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\utility\Vector3f.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\utility\Transformation.cpp">
+      <Filter>Source Files\utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\com\COBS.cpp">
+      <Filter>Source Files\com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\com\CommandParser.cpp">
+      <Filter>Source Files\com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\com\RpiSerial.cpp">
+      <Filter>Source Files\com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\test_COBS.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\mock\MockController.cpp">
+      <Filter>mocks</Filter>
+    </ClCompile>
+    <ClCompile Include="test_Controller.cpp">
+      <Filter>Test Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,19 +116,10 @@
     <ClInclude Include="..\..\..\..\head_tracking\Controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\head_tracking\utility\Vector3f.h">
-      <Filter>Header Files\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\head_tracking\utility\Rectangle.h">
-      <Filter>Header Files\utility</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\head_tracking\utility\Quarternion.h">
       <Filter>Header Files\utility</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\head_tracking\tracking\Feature.h">
-      <Filter>Header Files\tracking</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\head_tracking\MarkerTracker.h">
       <Filter>Header Files\tracking</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\head_tracking\tracking\MarkerTracker.h">
@@ -116,11 +131,35 @@
     <ClInclude Include="..\..\..\..\head_tracking\utility\YUVImage.h">
       <Filter>Header Files\utility</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\head_tracking\tracking\epnp\precomp.hpp">
-      <Filter>Header Files\tracking\epnp</Filter>
+    <ClInclude Include="..\..\..\..\head_tracking\utility\Vector3f.h">
+      <Filter>Header Files\utility</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\head_tracking\tracking\epnp\mepnp.h">
-      <Filter>Header Files\tracking\epnp</Filter>
+    <ClInclude Include="..\..\..\..\head_tracking\utility\Rectangle.h">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\head_tracking\utility\Transformation.h">
+      <Filter>Header Files\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\head_tracking\com\COBS.h">
+      <Filter>Header Files\com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\head_tracking\com\CommandParser.h">
+      <Filter>Header Files\com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\head_tracking\com\SerialInterface.h">
+      <Filter>Header Files\com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\head_tracking\com\RpiSerial.h">
+      <Filter>Header Files\com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\head_tracking\ControllerInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\mock\MockController.h">
+      <Filter>mocks</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

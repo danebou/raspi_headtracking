@@ -19,21 +19,16 @@ public:
 	}
 	uint8_t intensityThreshold = 80;
 	//const uint8_t intensityThreshold = 80;
-	
-	FeatureFinder(uint8_t intensityThreshold);
+
 	vector<Feature> FindFeatures(const YUVImage & image, Rectangle region);
 
 	void FillChecked(const YUVImage & image, bool * checkarray,
 		Rectangle region, tuple<int, int> start);
 	vector<tuple<int, int>> GetFeaturePixels(const YUVImage & image,
 		Rectangle region, tuple<int, int> start);
-	Feature FeatureFinder::DefineFeature(const YUVImage & image,
-		Rectangle region, tuple<int, int> start);
+	bool FeatureFinder::DefineFeature(const YUVImage & image,
+		Rectangle region, tuple<int, int> start, Feature * feature);
 private:
-	class PotentialFeature
-	{
-		
-	};
 };
 
 #endif /* MARKER_FINDER_H */
