@@ -7,6 +7,13 @@
 CommandParser::CommandParser(ControllerInterface& controller, SerialInterface& serial)
 	: controller(controller), serial(serial)
 {
+	// Begin receiveCommand thread
+	receiveThread = new std::thread(&CommandParser::ReceiveTask, this);
+}
+
+CommandParser::~CommandParser()
+{
+	delete receiveThread;
 }
 
 CommandParser::CommandError CommandParser::ParseCommand(uint8_t data[], int dataLength)
@@ -123,4 +130,14 @@ void CommandParser::SendCommand(CommandType type, const uint8_t data[], int data
 	serial.Write((const char *)cmdBytes, dataLength);
 
 	delete[] cmdBytes;
+}
+#include <iostream>
+void CommandParser::ReceiveTask()
+{
+	while (true)
+	{
+		using namespace std::this_thread;
+		sleep_for(chrono::milliseconds(4000));
+		cout << "\n" << "Hi from unimplemented read thread!\n" << 0;
+	}
 }

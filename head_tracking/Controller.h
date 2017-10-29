@@ -18,6 +18,8 @@ public:
 	void ProcessCameraFrame(YUVImage image);
 	void ResetCalibration(int cameraNum);
 	void AddCalibration(int cameraNum, Transformation t, float checkerSize);
+	void UpdatePosition(Vector3f position);
+	void ReceiveCommand();
 
 private:
 
@@ -25,6 +27,5 @@ private:
 	Calibrator calibrator;
 	CommandParser* cmdParser;
 
-	void UpdatePosition(Vector3f position);
 };
 

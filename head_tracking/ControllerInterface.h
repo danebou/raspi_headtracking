@@ -11,5 +11,6 @@ public:
 	virtual void ProcessCameraFrame(YUVImage image)=0;
 	virtual void ResetCalibration(int cameraNum)=0;
 	virtual void AddCalibration(int cameraNum, Transformation t, float checkerSize)=0;
+	virtual void UpdatePosition(Vector3f position)=0;
 };
 
