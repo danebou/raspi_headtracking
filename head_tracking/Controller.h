@@ -19,7 +19,6 @@ public:
 	void ResetCalibration(int cameraNum);
 	void AddCalibration(int cameraNum, Transformation t, float checkerSize);
 	void UpdatePosition(Vector3f position);
-	void ReceiveCommand();
 
 private:
 
