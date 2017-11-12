@@ -4,8 +4,6 @@
 
 Controller::Controller()
 {
-	serial = RpiSerial();
-	calibrator = Calibrator();
 	cmdParser = new CommandParser(*this, serial);
 }
 
@@ -30,8 +28,8 @@ void Controller::ResetCalibration(int cameraNum)
 	calibrator.Reset();
 }
 
-void Controller::AddCalibration(int cameraNum, Transformation t, float checkerSize)
+void Controller::AddCalibration(int cameraNum, Transformation t, float checkerSize, int checkerRows, int checkerCols)
 {
 	(void) cameraNum;
-	calibrator.Add(t, checkerSize);
+	calibrator.Add(t, checkerSize, checkerRows, checkerCols);
 }

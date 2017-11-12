@@ -1,8 +1,8 @@
 #include "CommandParser.h"
 #include "com/COBS.h"
 #include <string.h>
-
-#define ToFloat(x) *((float *)&(x))
+#include <vector>
+#include <iostream>
 
 CommandParser::CommandParser(ControllerInterface& controller, SerialInterface& serial)
 	: controller(controller), serial(serial)
@@ -18,8 +18,9 @@ CommandParser::~CommandParser()
 
 CommandParser::CommandError CommandParser::ParseCommand(uint8_t data[], int dataLength)
 {
-	if (!COBS::Decode(data, dataLength))
+	if (!COBS::Decode(data, dataLength)) {
 		return CommandError::COBS;
+	}
 
 	// Remove leading byte in COBS
 	data += 1;
@@ -43,12 +44,10 @@ CommandParser::CommandError CommandParser::DoCommand(CommandType type, const uin
 	switch (type)
 	{
 	case CommandType::ResetCalibration:
-		ResetCalibration(data, dataLength);
-		break;
+		return ResetCalibration(data, dataLength);
 
 	case CommandType::AddCalibration:
-		AddCalibration(data, dataLength);
-		break;
+		return AddCalibration(data, dataLength);
 
 	case CommandType::SetEyeDistance:
 		break;
@@ -62,26 +61,25 @@ CommandParser::CommandError CommandParser::DoCommand(CommandType type, const uin
 
 CommandParser::CommandError CommandParser::AddCalibration(const uint8_t data[], int dataLength)
 {
-	if (dataLength != 33)
+	if (dataLength != 40)
 		return CommandError::UnexpectedLength;
 
-	int cameraNum = data[0];
-	Transformation t(
-		Vector3f(
-			ToFloat(data[1]),
-			ToFloat(data[5]),
-			ToFloat(data[9])
-		),
-		Quarternion(
-			ToFloat(data[13]),
-			ToFloat(data[17]),
-			ToFloat(data[21]),
-			ToFloat(data[25])
-		)
-	);
-	float checkerSize = ToFloat(data[29]);
+	Transformation t = Transformation(Vector3f(), Quarternion());
+	memcpy(&t.loc.x, &data[0], 4);
+	memcpy(&t.loc.y, &data[4], 4);
+	memcpy(&t.loc.z, &data[8], 4);
+	memcpy(&t.rot.r, &data[12], 4);
+	memcpy(&t.rot.i, &data[16], 4);
+	memcpy(&t.rot.j, &data[20], 4);
+	memcpy(&t.rot.k, &data[24], 4);
 
-	controller.AddCalibration(cameraNum, t, checkerSize);
+	float checkerSize;
+	int checkerRows, checkerCol;
+	memcpy(&checkerSize, &data[28], 4);
+	memcpy(&checkerRows, &data[32], 4);
+	memcpy(&checkerCol, &data[36], 4);
+
+	controller.AddCalibration(0, t, checkerSize, checkerRows, checkerCol);
 
 	return CommandError::NoError;
 }
@@ -89,10 +87,11 @@ CommandParser::CommandError CommandParser::AddCalibration(const uint8_t data[], 
 CommandParser::CommandError CommandParser::ResetCalibration(const uint8_t data[], int dataLength)
 {
 	(void) data; // We are not using this arg
-	if (dataLength != 1)
+	if (dataLength != 0)
 		return CommandError::UnexpectedLength;
 
 	//int cameraNum = data[0];
+	controller.ResetCalibration(0);
 
 	return CommandError::NoError;
 }
@@ -131,13 +130,33 @@ void CommandParser::SendCommand(CommandType type, const uint8_t data[], int data
 
 	delete[] cmdBytes;
 }
-#include <iostream>
+
 void CommandParser::ReceiveTask()
 {
+	static char readChar;
+	vector<char> buffer;
+
 	while (true)
 	{
 		using namespace std::this_thread;
-		sleep_for(chrono::milliseconds(4000));
-		cout << "\n" << "Hi from unimplemented read thread!\n" << 0;
+		sleep_for(chrono::milliseconds(1000));
+
+		cout << "Hi from implemented read thread!\n" << 0;
+
+		while (serial.Read(&readChar, 1) > 0)
+		{
+			if (readChar == 0x00) {
+				CommandError err = ParseCommand(reinterpret_cast<uint8_t *>(buffer.data()), buffer.size());
+				if (err != CommandError::NoError)
+				{
+					cout << "Failed to parse a command (Err: " << (int) err <<")\n"; 
+				}
+
+				buffer.clear();
+				continue;
+			}
+
+			buffer.push_back(readChar);
+		}
 	}
 }

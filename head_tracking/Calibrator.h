@@ -8,7 +8,7 @@ public:
 
 	Calibrator();
 	void Reset();
-	void Add(Transformation transformation, float checkerSize);
+	void Add(Transformation transformation, float checkerSize, int checkerRows, int checkerCols);
 
 private:
 	int count;

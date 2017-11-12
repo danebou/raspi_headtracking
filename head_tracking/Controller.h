@@ -17,7 +17,7 @@ public:
 
 	void ProcessCameraFrame(YUVImage image);
 	void ResetCalibration(int cameraNum);
-	void AddCalibration(int cameraNum, Transformation t, float checkerSize);
+	void AddCalibration(int cameraNum, Transformation t, float checkerSize, int checkerRows, int checkerCols);
 	void UpdatePosition(Vector3f position);
 
 private:

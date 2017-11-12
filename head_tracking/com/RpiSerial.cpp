@@ -7,7 +7,8 @@
 #include <errno.h>
 #include <string.h>
 
-int RpiSerial::Init() {
+int RpiSerial::Init() 
+{
     // Open serial port (USBOtg is "ttyGSO")
     sfd = open("/dev/ttyGS0", O_RDWR | O_NOCTTY);
     if (tcgetattr(sfd, &options) < 0)
@@ -48,16 +49,16 @@ RpiSerial::~RpiSerial()
 
 int RpiSerial::Read(char dst[], int length)
 {
-	return read(sfd,dst,length);
+	return read(sfd, dst, length);
 }
 
 void RpiSerial::Write(const char src[], int length)
 {
-	std::cout << "Write data(" << length << "): ";
+	/*std::cout << "Write data(" << length << "): ";
 	for (int i = 0; i < length; i++)
 	{
 		std::cout << " 0x" << std::hex << (int)((uint8_t *) src)[i] << std::dec;
 	}
-	std::cout << "\n";
+	std::cout << "\n";*/
 	write(sfd, src, length);
 }
