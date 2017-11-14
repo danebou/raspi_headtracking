@@ -18,5 +18,6 @@ public:
 	Quarternion operator *(const Quarternion other) const;
 	Quarternion operator *(const float other) const;
 	Quarternion operator /(const float other) const;
+	Quarternion operator ~() const;
 };
 

@@ -12,5 +12,7 @@ public:
 
 private:
 	int count;
+
+	vector<vector<Vector3>> GenerateCheckerboard(Transformation t, float checkerSize, int checkerRows, int checkerCols);
 };
 

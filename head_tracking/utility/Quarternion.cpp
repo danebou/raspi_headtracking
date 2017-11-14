@@ -72,3 +72,13 @@ Quarternion Quarternion::operator/(const float other) const
 		this->k / other
 	);
 }
+
+Quarternion Quarternion::operator ~() const
+{
+	Quarternion(
+		this->r,
+		-this->i,
+		-this->j,
+		-this->k
+	);
+}
