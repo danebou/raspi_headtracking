@@ -146,7 +146,7 @@ void CommandParser::ReceiveTask()
 		while (serial.Read(&readChar, 1) > 0)
 		{
 			if (readChar == 0x00) {
-				CommandError err = ParseCommand(reinterpret_cast<uint8_t *>(buffer.data()), buffer.size());
+				CommandError err = ParseCommand(reinterpret_cast<uint8_t *>(buffer.data()), (int) buffer.size());
 				if (err != CommandError::NoError)
 				{
 					cout << "Failed to parse a command (Err: " << (int) err <<")\n"; 

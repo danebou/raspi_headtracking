@@ -1,5 +1,9 @@
 #pragma once
+#include <vector>
+#include "utility/Vector3f.h"
 #include "utility/Transformation.h"
+
+using namespace std;
 
 class Calibrator
 {
@@ -9,10 +13,10 @@ public:
 	Calibrator();
 	void Reset();
 	void Add(Transformation transformation, float checkerSize, int checkerRows, int checkerCols);
+	static vector<vector<Vector3f>> GenerateCheckerboard(Transformation t, float checkerSize, int checkerRows, int checkerCols);
 
 private:
 	int count;
 
-	vector<vector<Vector3>> GenerateCheckerboard(Transformation t, float checkerSize, int checkerRows, int checkerCols);
 };
 

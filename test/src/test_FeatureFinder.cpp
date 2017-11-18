@@ -142,7 +142,10 @@ void FeatureFinderVideoTest(string fileName, vector<int> nonTrackFrames)
 
 		// Wait to display next frame, (wait a full second for failed)
 		if (waitKey(found || !frameHasFeature ? 1 : 1000) >= 0)
+		{
+			FAIL();
 			break;
+		}
 #endif
 	}
 #ifdef _DEBUG

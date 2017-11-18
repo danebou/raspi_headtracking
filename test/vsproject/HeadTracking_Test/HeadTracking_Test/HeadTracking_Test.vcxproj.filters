@@ -51,9 +51,6 @@
     <ClCompile Include="..\..\..\src\test_Quaternion.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\head_tracking\Controller.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\head_tracking\Calibrator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -93,12 +90,6 @@
     <ClCompile Include="..\..\..\..\head_tracking\com\COBS.cpp">
       <Filter>Source Files\com</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\head_tracking\com\CommandParser.cpp">
-      <Filter>Source Files\com</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\head_tracking\com\RpiSerial.cpp">
-      <Filter>Source Files\com</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\test_COBS.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
@@ -108,12 +99,15 @@
     <ClCompile Include="test_Controller.cpp">
       <Filter>Test Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\head_tracking\com\CommandParser.cpp">
+      <Filter>Source Files\com</Filter>
+    </ClCompile>
+    <ClCompile Include="test_Calibrator.cpp">
+      <Filter>Test Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\head_tracking\Calibrator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\head_tracking\Controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\head_tracking\utility\Quarternion.h">
@@ -140,8 +134,11 @@
     <ClInclude Include="..\..\..\..\head_tracking\utility\Transformation.h">
       <Filter>Header Files\utility</Filter>
     </ClInclude>
-    <ClInclude Include="CommandParser.h">
+    <ClInclude Include="..\..\..\..\head_tracking\ControllerInterface.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\mock\MockController.h">
+      <Filter>mocks</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\head_tracking\com\COBS.h">
       <Filter>Header Files\com</Filter>
@@ -151,15 +148,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\head_tracking\com\SerialInterface.h">
       <Filter>Header Files\com</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\head_tracking\com\RpiSerial.h">
-      <Filter>Header Files\com</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\head_tracking\ControllerInterface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\mock\MockController.h">
-      <Filter>mocks</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

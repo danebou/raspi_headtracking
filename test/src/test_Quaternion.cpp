@@ -77,3 +77,11 @@ TEST(Quarternion, RealDivision)
 	Quarternion result(0.2f, 0.4f, 0.6f, 0.8f);
 	EXPECT_EQ(result, a / b);
 }
+
+// Tests quaternion conjugate
+TEST(Quarternion, Conjugate)
+{
+	Quarternion a(1, 2, 3, 4);
+	Quarternion result(1, -2, -3, -4);
+	EXPECT_EQ(result, ~a);
+}

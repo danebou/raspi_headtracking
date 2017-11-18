@@ -1,4 +1,5 @@
 #include "Calibrator.h"
+#include "utility/Quarternion.h"
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <vector>
@@ -30,18 +31,18 @@ void Calibrator::Add(Transformation t, float checkerSize, int checkerRows, int c
 	count++;
 }
 
-vector<vector<Vector3>> Calibrator::GenerateCheckerboard(Transformation t, float checkerSize, int checkerRows, int checkerCols) 
+vector<vector<Vector3f>> Calibrator::GenerateCheckerboard(Transformation t, float checkerSize, int checkerRows, int checkerCols) 
 {
-	vector<vector<Vector3>> checkboard;
+	vector<vector<Vector3f>> checkerboard;
 
 	// Initialize array to flat checkerboard pattern
-	checkboard.resize(checkerRows);
+	checkerboard.resize(checkerRows);
 	for (int y = 0; y < checkerRows; y++)
 	{
-		checkboard[y].resize(checkerCols);
+		checkerboard[y].resize(checkerCols);
 		for (int x = 0; x < checkerCols; x++)
 		{
-			checkerboard[y][x] = Vector3(x * checkerSize, y * checkerSize, 0);
+			checkerboard[y][x] = Vector3f(x * checkerSize, y * checkerSize, 0);
 		}
 	}
 
@@ -50,18 +51,18 @@ vector<vector<Vector3>> Calibrator::GenerateCheckerboard(Transformation t, float
 	{
 		for (int x = 0; x < checkerCols; x++)
 		{
-			Vector3 pos = checkerboard[y][x];
+			Vector3f pos = checkerboard[y][x];
 			
 			// Convert to quaternion point
-			Quaternion point = Quaternion(0, pos.x, pos.y, pos.z);
+			Quarternion point = Quarternion(0, pos.x, pos.y, pos.z);
 			
 			// Quaternion rotation magic (qpq^-1)
-			Quaternion rotatedPoint = t.rot * point * (~t.rot);
+			Quarternion rotatedPoint = t.rot * point * (~t.rot);
 			
 			// Add position transformation
-			checkerboard[y][x] = Vector3(rotatedPoint.x, rotatedPoint.y, rotatedPoint.z) + t.pos;
+			checkerboard[y][x] = Vector3f(rotatedPoint.i, rotatedPoint.j, rotatedPoint.k) + t.loc;
 		}
 	}
 
-	return checkboard;
+	return checkerboard;
 }

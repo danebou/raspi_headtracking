@@ -136,8 +136,6 @@
     <ClCompile Include="..\..\..\..\head_tracking\Calibrator.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\com\COBS.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\com\CommandParser.cpp" />
-    <ClCompile Include="..\..\..\..\head_tracking\com\RpiSerial.cpp" />
-    <ClCompile Include="..\..\..\..\head_tracking\Controller.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\tracking\Feature.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\tracking\FeatureFinder.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\tracking\MarkerTracker.cpp" />
@@ -155,15 +153,14 @@
     <ClCompile Include="..\..\..\src\test_Rectangle.cpp" />
     <ClCompile Include="..\..\..\src\test_Vector3.cpp" />
     <ClCompile Include="..\..\..\src\test_YUVImage.cpp" />
+    <ClCompile Include="test_Calibrator.cpp" />
     <ClCompile Include="test_Controller.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\head_tracking\Calibrator.h" />
     <ClInclude Include="..\..\..\..\head_tracking\com\COBS.h" />
     <ClInclude Include="..\..\..\..\head_tracking\com\CommandParser.h" />
-    <ClInclude Include="..\..\..\..\head_tracking\com\RpiSerial.h" />
     <ClInclude Include="..\..\..\..\head_tracking\com\SerialInterface.h" />
-    <ClInclude Include="..\..\..\..\head_tracking\Controller.h" />
     <ClInclude Include="..\..\..\..\head_tracking\ControllerInterface.h" />
     <ClInclude Include="..\..\..\..\head_tracking\tracking\Feature.h" />
     <ClInclude Include="..\..\..\..\head_tracking\tracking\FeatureFinder.h" />
@@ -174,7 +171,6 @@
     <ClInclude Include="..\..\..\..\head_tracking\utility\Vector3f.h" />
     <ClInclude Include="..\..\..\..\head_tracking\utility\YUVImage.h" />
     <ClInclude Include="..\..\..\src\mock\MockController.h" />
-    <ClInclude Include="CommandParser.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\data\ir_tracking_easy.avi">

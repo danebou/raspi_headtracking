@@ -75,7 +75,7 @@ Quarternion Quarternion::operator/(const float other) const
 
 Quarternion Quarternion::operator ~() const
 {
-	Quarternion(
+	return Quarternion(
 		this->r,
 		-this->i,
 		-this->j,
