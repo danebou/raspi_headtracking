@@ -9,6 +9,8 @@ public:
 
     Rectangle();
     Rectangle(int x, int y, int width, int height);
+    bool operator==(const Rectangle& rhs) const;
+	bool operator!=(const Rectangle& rhs) const;
 };
 
 #endif /* RECTANGLE_H */

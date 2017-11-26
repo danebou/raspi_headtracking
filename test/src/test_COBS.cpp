@@ -1,6 +1,6 @@
-#include <gtest\gtest.h>
-#include <gmock\gmock.h>
-#include "com\COBS.h"
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include "com/COBS.h"
 #include <vector>
 #include <stdint.h>
 

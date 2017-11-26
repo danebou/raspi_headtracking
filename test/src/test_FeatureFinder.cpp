@@ -138,7 +138,7 @@ void FeatureFinderVideoTest(string fileName, vector<int> nonTrackFrames)
 		putText(gray, frameDescStr.str(), Point(width / 2, height / 2),
 			FONT_HERSHEY_SIMPLEX, 1.0f, Scalar(255, 255, 255), 3);
 
-		imshow("IR Tracking Stress", gray);
+		imshow("IR Tracking", gray);
 
 		// Wait to display next frame, (wait a full second for failed)
 		if (waitKey(found || !frameHasFeature ? 1 : 1000) >= 0)
@@ -159,7 +159,7 @@ TEST(FeatureFinder, FindsFeatureEasy)
 	{
 		0, 1, 2, 1757, 1758, 1759, 1760, 1761
 	};
-	FeatureFinderVideoTest("ir_tracking_easy.avi", nonTrackFrames);
+	FeatureFinderVideoTest("data/ir_tracking_easy.avi", nonTrackFrames);
 }
 
 TEST(FeatureFinder, FindsFeatureStress)
@@ -170,5 +170,5 @@ TEST(FeatureFinder, FindsFeatureStress)
 		1646, 1647, 1648, 1649, 1650, 1651, 1652,
 		1653, 1654
 	};
-	FeatureFinderVideoTest("ir_tracking_stress.avi", nonTrackFrames);
+	FeatureFinderVideoTest("data/ir_tracking_stress.avi", nonTrackFrames);
 }

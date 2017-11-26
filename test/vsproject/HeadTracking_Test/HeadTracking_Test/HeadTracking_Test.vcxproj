@@ -136,9 +136,11 @@
     <ClCompile Include="..\..\..\..\head_tracking\Calibrator.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\com\COBS.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\com\CommandParser.cpp" />
+    <ClCompile Include="..\..\..\..\head_tracking\Controller.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\tracking\Feature.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\tracking\FeatureFinder.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\tracking\MarkerTracker.cpp" />
+    <ClCompile Include="..\..\..\..\head_tracking\utility\Checkerboard.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\utility\Quarternion.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\utility\Rectangle.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\utility\Transformation.cpp" />
@@ -146,31 +148,36 @@
     <ClCompile Include="..\..\..\..\head_tracking\utility\YUVImage.cpp" />
     <ClCompile Include="..\..\..\src\main.cpp" />
     <ClCompile Include="..\..\..\src\mock\MockController.cpp" />
+    <ClCompile Include="..\..\..\src\mock\MockSerial.cpp" />
+    <ClCompile Include="..\..\..\src\test_Calibrator.cpp" />
+    <ClCompile Include="..\..\..\src\test_Checkerboard.cpp" />
     <ClCompile Include="..\..\..\src\test_COBS.cpp" />
+    <ClCompile Include="..\..\..\src\test_Controller.cpp" />
     <ClCompile Include="..\..\..\src\test_FeatureFinder.cpp" />
     <ClCompile Include="..\..\..\src\test_MarkerTracker.cpp" />
     <ClCompile Include="..\..\..\src\test_Quaternion.cpp" />
     <ClCompile Include="..\..\..\src\test_Rectangle.cpp" />
     <ClCompile Include="..\..\..\src\test_Vector3.cpp" />
     <ClCompile Include="..\..\..\src\test_YUVImage.cpp" />
-    <ClCompile Include="test_Calibrator.cpp" />
-    <ClCompile Include="test_Controller.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\head_tracking\Calibrator.h" />
     <ClInclude Include="..\..\..\..\head_tracking\com\COBS.h" />
     <ClInclude Include="..\..\..\..\head_tracking\com\CommandParser.h" />
     <ClInclude Include="..\..\..\..\head_tracking\com\SerialInterface.h" />
+    <ClInclude Include="..\..\..\..\head_tracking\Controller.h" />
     <ClInclude Include="..\..\..\..\head_tracking\ControllerInterface.h" />
     <ClInclude Include="..\..\..\..\head_tracking\tracking\Feature.h" />
     <ClInclude Include="..\..\..\..\head_tracking\tracking\FeatureFinder.h" />
     <ClInclude Include="..\..\..\..\head_tracking\tracking\MarkerTracker.h" />
+    <ClInclude Include="..\..\..\..\head_tracking\utility\Checkerboard.h" />
     <ClInclude Include="..\..\..\..\head_tracking\utility\Quarternion.h" />
     <ClInclude Include="..\..\..\..\head_tracking\utility\Rectangle.h" />
     <ClInclude Include="..\..\..\..\head_tracking\utility\Transformation.h" />
     <ClInclude Include="..\..\..\..\head_tracking\utility\Vector3f.h" />
     <ClInclude Include="..\..\..\..\head_tracking\utility\YUVImage.h" />
     <ClInclude Include="..\..\..\src\mock\MockController.h" />
+    <ClInclude Include="..\..\..\src\mock\MockSerial.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\data\ir_tracking_easy.avi">

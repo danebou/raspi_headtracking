@@ -10,5 +10,6 @@ class Transformation
 public:
 	Vector3f loc;
 	Quarternion rot;
+	Transformation();
 	Transformation(Vector3f loc, Quarternion rot);
 };

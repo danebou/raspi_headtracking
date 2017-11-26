@@ -7,7 +7,7 @@ int main()
 {
     cout << "Starting program...\n";
 
-    Controller controller = Controller();
+    Controller controller;
     
     float radians = 0;
     while (true)
