@@ -39,6 +39,10 @@ Vector3f Controller::ProcessCameraFrame(const YUVImage image)
 {
 	HandleImageForCalibration(image);
 
+	Calibrator::Constants c = calibrator.GetConstants();
+	if (!c.isCalibrated)
+		return Vector3f(NAN, NAN, NAN);
+
 	Vector3f pos = tracker.FindLocation(image);
 	UpdatePosition(pos);
 	return pos;

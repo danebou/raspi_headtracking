@@ -8,8 +8,6 @@ class Calibrator : public CalibratorInterface
 {
 public:
 
-	bool isCalibrated;
-
 	Calibrator();
 	void Reset();
 	bool Add(YUVImage img, Transformation transformation, float checkerSize, int checkerRows, int checkerCols);

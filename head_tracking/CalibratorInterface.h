@@ -16,6 +16,7 @@ public:
 
 	struct Constants
 	{
+		bool isCalibrated;
 		Mat camMat;
 		Mat distCoeffs;
 		Mat rvec_cw, tvec_cw;

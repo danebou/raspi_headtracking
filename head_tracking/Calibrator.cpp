@@ -15,8 +15,9 @@ Calibrator::Calibrator()
 
 void Calibrator::Reset()
 {
+	lock_guard<mutex> lg(constant_m);
 	cout << "Reset calibration\n";
-	isCalibrated = false;
+	constants.isCalibrated = false;
 	count = 0;
 	calImgPoints.clear();
 	calObjPoints.clear();
@@ -24,6 +25,7 @@ void Calibrator::Reset()
 
 bool Calibrator::Add(YUVImage img, Transformation t, float checkerSize, int checkerRows, int checkerCols)
 {
+	lock_guard<mutex> lg(constant_m);
 	cout << "Adding calibration -(" << count << "):\n";
 	cout << "\tCheckerboard: " << checkerRows << "x" << checkerCols << endl;
 	cout << "\tCheckerboard size: " << checkerSize << endl;
@@ -48,7 +50,7 @@ bool Calibrator::Add(YUVImage img, Transformation t, float checkerSize, int chec
 	// On the first calibration, get camera intristic values using calibrateCamera
 	// Rest of them (and first) get extrinstic using solvePnP
 	double intrinsicErr;
-	if (!isCalibrated)
+	if (!constants.isCalibrated)
 	{
 		intrinsicErr = CalibrateIntrinsicParameters(cb.GetInnerCorners(), imgCorners, imgSize);
 		cout << "\t\tIntrinsic Error: " << intrinsicErr << endl;
@@ -75,7 +77,7 @@ bool Calibrator::Add(YUVImage img, Transformation t, float checkerSize, int chec
 #endif
 
 	// We are now calibrated
-	isCalibrated = true;
+	constants.isCalibrated = true;
 	count++;
 	return true;
 }
@@ -126,7 +128,6 @@ double Calibrator::CalibrateIntrinsicParameters(vector<Point3f> objPoints, vecto
 
 	vector<vector<Point3f>> wrappedObjPoints = { objPoints };
 	vector<vector<Point2f>> wrappedImgPoints = { imgPoints };
-	lock_guard<mutex> lock(constant_m);
 	double err = calibrateCamera(wrappedObjPoints, wrappedImgPoints, imgSize, 
 		constants.camMat, constants.distCoeffs, rvecs, tvecs);
 	Vector3f calPos = Vector3f(
@@ -146,7 +147,6 @@ double Calibrator::CalibrateExtrinsicParameters(vector<Point3f> objPoints, vecto
 	// Ransac method might be the best considering we have a lot of points
 	// This will get us rvecs going from world (object) to camera space,
 	Mat rvec_wc, tvec_wc;
-	lock_guard<mutex> lock(constant_m);
 	solvePnPRansac(objPoints, imgPoints, constants.camMat, constants.distCoeffs, rvec_wc, tvec_wc);
 
 	// Invert to go from camera to world space
