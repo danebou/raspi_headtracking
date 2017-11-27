@@ -3,7 +3,7 @@ include_directories( "head_tracking" )
 project( HeadTracking )
 
 #add_subdirectory("rpi_camera")
-add_subdirectory("rpi_camera/host_applications/linux/apps/raspicam")
+#add_subdirectory("rpi_camera/host_applications/linux/apps/raspicam")
 
 set(CMAKE_CXX_STANDARD 11)
 set(THREADS_PREFER_PTHREAD_FLAG ON)

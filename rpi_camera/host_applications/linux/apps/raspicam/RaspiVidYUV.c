@@ -67,7 +67,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "bcm_host.h"
 #include "interface/vcos/vcos.h"
 
-#include "headtracking/CaptureHandler.h"
+#include "CaptureHandler.h"
 
 #include "interface/mmal/mmal.h"
 #include "interface/mmal/mmal_logging.h"
@@ -775,7 +775,7 @@ int main(int argc, const char **argv)
    MMAL_PORT_T *preview_input_port = NULL;
 
    bcm_host_init();
-   ch_init();
+   //ch_init();
 
    // Register our application with the logging system
    vcos_log_register("RaspiVid", VCOS_LOG_CATEGORY);
@@ -949,7 +949,7 @@ error:
    if (status != MMAL_SUCCESS)
       raspicamcontrol_check_configuration(128);
 
-   ch_destroy();
+   //ch_destroy();
 
    return exit_code;
 }
