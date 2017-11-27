@@ -13,7 +13,7 @@ set (COMMON_SOURCES
    RaspiPreview.c)
 
 set (HEADTRACKING_SOURCES
-    headtracking/capture_handler.c)
+    CaptureHandler.cpp)
 
 add_executable(raspividyuv ${HEADTRACKING_SOURCES} ${COMMON_SOURCES} RaspiVidYUV.c)
 

@@ -67,7 +67,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "bcm_host.h"
 #include "interface/vcos/vcos.h"
 
-#include "headtracking/capture_handler.h"
+#include "headtracking/CaptureHandler.h"
 
 #include "interface/mmal/mmal.h"
 #include "interface/mmal/mmal_logging.h"
@@ -313,8 +313,8 @@ static void camera_buffer_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buff
       if (bytes_to_write)
       {
          mmal_buffer_header_mem_lock(buffer);
-         handle_capture(buffer->data, port->format->es->video.width,
-           port->format->es->video.height,bytes_to_write);
+         HandleCapture(buffer->data, port->format->es->video.width,
+           port->format->es->video.height, bytes_to_write);
 
          mmal_buffer_header_mem_unlock(buffer);
          update_fps();
