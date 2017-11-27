@@ -22,7 +22,7 @@ void Calibrator::Reset()
 	calObjPoints.clear();
 }
 
-void Calibrator::Add(YUVImage img, Transformation t, float checkerSize, int checkerRows, int checkerCols)
+bool Calibrator::Add(YUVImage img, Transformation t, float checkerSize, int checkerRows, int checkerCols)
 {
 	cout << "Adding calibration -(" << count << "):\n";
 	cout << "\tCheckerboard: " << checkerRows << "x" << checkerCols << "\n";
@@ -38,7 +38,7 @@ void Calibrator::Add(YUVImage img, Transformation t, float checkerSize, int chec
 	if (imgCorners.size() == 0)
 	{
 		cout << "\tFailed! Could not find Checkerboard.\n";
-		return;
+		return false;
 	}
 	else
 	{
@@ -70,6 +70,7 @@ void Calibrator::Add(YUVImage img, Transformation t, float checkerSize, int chec
 	// We are now calibrated
 	isCalibrated = true;
 	count++;
+	return true;
 }
 
 Calibrator::Constants Calibrator::GetConstants()
@@ -129,12 +130,6 @@ double Calibrator::CalibrateIntrinsicParameters(vector<Point3f> objPoints, vecto
 
 	Mat r, t;
 	InvertRT(rvecs[0], tvecs[0], r, t);
-
-	Vector3f calPos3 = Vector3f(
-		(float)t.at<double>(0),
-		(float)t.at<double>(1),
-		(float)t.at<double>(2)
-	);
 
 	return err;
 }

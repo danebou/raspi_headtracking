@@ -22,11 +22,12 @@ class Controller : public ControllerInterface
 
 public:
 	Controller();
+	Controller(vector<Vec3f> trackModel);
 	~Controller();
 
-	void ProcessCameraFrame(YUVImage image);
+	Vector3f ProcessCameraFrame(const YUVImage image);
 	void ResetCalibration(int cameraNum);
-	void AddCalibration(int cameraNum, Transformation t, float checkerSize, int checkerRows, int checkerCols);
+	bool AddCalibration(int cameraNum, Transformation t, float checkerSize, int checkerRows, int checkerCols);
 	void UpdatePosition(Vector3f position);
 
 private:
@@ -36,10 +37,11 @@ private:
 #else
 	MockSerial serial;
 #endif
+	const static vector<Vec3f> defaultTrackModel;
+	const vector<Vec3f> trackModel;
 	Calibrator calibrator;
 	CommandParser* cmdParser;
 	MarkerTracker tracker;
-	const static vector<Vec3f> trackModel;
 
 	YUVImage * calImg = nullptr;
 	uint8_t * calImgData = nullptr;

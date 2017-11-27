@@ -1,6 +1,9 @@
 #pragma once
 #include "ControllerInterface.h"
 #include <thread>
+#include <mutex>
+
+using namespace std;
 
 class ControllerInterface;
 
@@ -33,8 +36,10 @@ private:
 	CommandError AddCalibration(const uint8_t data[], int dataLength);
 	void ReceiveTask();
 
-	std::thread * receiveThread;
+	thread * receiveThread;
 	ControllerInterface& controller;
 	SerialInterface& serial;
+	mutex stopThread_m;
+	bool stopThread = false;
 };
 

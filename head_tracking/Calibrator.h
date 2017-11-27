@@ -26,7 +26,7 @@ public:
 
 	Calibrator();
 	void Reset();
-	void Add(YUVImage img, Transformation transformation, float checkerSize, int checkerRows, int checkerCols);
+	bool Add(YUVImage img, Transformation transformation, float checkerSize, int checkerRows, int checkerCols);
 	Constants GetConstants();
 
 private:

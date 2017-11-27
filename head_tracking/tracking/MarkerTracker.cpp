@@ -21,7 +21,7 @@ Vector3f MarkerTracker::FindLocation(const YUVImage & image)
 		return Vector3f(NAN, NAN, NAN);
 	
 	// Prep feature points (Convert points to Point2f vector)
-	vector<Point2f> features2d;
+	vector<Point2f> features2d(model.size());
 	for (int i = 0; i < model.size(); i++)
 	{
 		features2d[i] = Point2f(features[i].x, features[i].y);
@@ -75,7 +75,7 @@ vector<Feature> MarkerTracker::TrackFeatures(const YUVImage & image)
 	}
 	// When we have found all the features, or we have checked the entire image we are done
 	while (features.size() < model.size() 
-		&& region != Rectangle(0, 0, image.width - 1, image.height - 1));
+		&& region != Rectangle(0, 0, image.width, image.height));
 
 	// If we couldn't find enough features and we checked the entire image, no features found :(
 	if (features.size() < model.size())

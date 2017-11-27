@@ -3,7 +3,7 @@
 
 using namespace std;
 
-const vector<Vec3f> Controller::trackModel = 
+const vector<Vec3f> Controller::defaultTrackModel = 
 {
 	Vec3f(-0.01f, 0.00f, 0.00f),
 	Vec3f(0.00f, 0.01f, 0.00f),
@@ -12,7 +12,13 @@ const vector<Vec3f> Controller::trackModel =
 };
 
 Controller::Controller()
-	: tracker(calibrator,trackModel)
+	: trackModel(defaultTrackModel), tracker(calibrator, trackModel)
+{
+	cmdParser = new CommandParser(*this, serial);
+}
+
+Controller::Controller(vector<Vec3f> trackModel) 
+	: trackModel(trackModel), tracker(calibrator, trackModel)
 {
 	cmdParser = new CommandParser(*this, serial);
 }
@@ -28,9 +34,13 @@ Controller::~Controller()
 	calImgData = nullptr;
 }
 
-void Controller::ProcessCameraFrame(YUVImage image)
+Vector3f Controller::ProcessCameraFrame(const YUVImage image)
 {
 	HandleImageForCalibration(image);
+
+	Vector3f pos = tracker.FindLocation(image);
+	UpdatePosition(pos);
+	return pos;
 }
 
 void Controller::UpdatePosition(Vector3f position)
@@ -44,7 +54,7 @@ void Controller::ResetCalibration(int cameraNum)
 	calibrator.Reset();
 }
 
-void Controller::AddCalibration(int cameraNum, Transformation t, float checkerSize, int checkerRows, int checkerCols)
+bool Controller::AddCalibration(int cameraNum, Transformation t, float checkerSize, int checkerRows, int checkerCols)
 {
 	(void) cameraNum; // Placeholder parameter, avoid warning
 
@@ -54,7 +64,7 @@ void Controller::AddCalibration(int cameraNum, Transformation t, float checkerSi
 	// Exit if we were alreadying performing a calibration
 	// Ignore this request
 	if (calWaitingForImage)
-		return; // (automatically unlocked)
+		return false; // (automatically unlocked)
 
 	// We are now waiting on an image
 	calWaitingForImage = true;
@@ -64,7 +74,7 @@ void Controller::AddCalibration(int cameraNum, Transformation t, float checkerSi
 	// (we now have a valid calImg!)
 
 	// Perform calibration
-	calibrator.Add(*calImg, t, checkerSize, checkerRows, checkerCols);
+	return calibrator.Add(*calImg, t, checkerSize, checkerRows, checkerCols);
 }
 
 void Controller::HandleImageForCalibration(const YUVImage image)

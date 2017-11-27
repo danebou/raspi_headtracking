@@ -2,7 +2,6 @@
 #include <gtest/gtest.h>
 #include <Calibrator.h>
 #include <opencv2/opencv.hpp>
-#include <opencv2/core.hpp>
 
 using namespace cv;
 
@@ -85,6 +84,10 @@ TEST(Calibrator, SmallReprojectionError)
 
 TEST(Calibrator, MultipleAddsWithSameError)
 {
+#ifdef _DEBUG
+	FAIL(); // OpenCV doesn't work well with debug mode
+#endif
+
 	Mat checkImg = imread("data/checkerboard1.png");
 	Size checkSize = Size(9, 7);
 
