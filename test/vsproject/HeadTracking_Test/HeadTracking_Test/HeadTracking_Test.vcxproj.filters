@@ -117,6 +117,9 @@
     <ClCompile Include="..\..\..\src\mock\MockSerial.cpp">
       <Filter>mocks</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\mock\MockCalibrator.cpp">
+      <Filter>mocks</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\head_tracking\utility\Quarternion.h">
@@ -168,6 +171,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\mock\MockSerial.h">
+      <Filter>mocks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\head_tracking\CalibratorInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MockCalibrator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\mock\MockCalibrator.h">
       <Filter>mocks</Filter>
     </ClInclude>
   </ItemGroup>

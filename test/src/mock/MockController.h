@@ -4,8 +4,8 @@
 class MockController : public ControllerInterface
 {
 public:
-	void ProcessCameraFrame(YUVImage image);
+	Vector3f ProcessCameraFrame(const YUVImage image);
 	void ResetCalibration(int cameraNum);
-	void AddCalibration(int cameraNum, Transformation t, float checkerSize);
+	bool AddCalibration(int cameraNum, Transformation t, float checkerSize);
 };
 

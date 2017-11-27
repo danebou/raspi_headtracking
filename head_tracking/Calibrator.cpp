@@ -22,11 +22,11 @@ void Calibrator::Reset()
 	calObjPoints.clear();
 }
 
-void Calibrator::Add(YUVImage img, Transformation t, float checkerSize, int checkerRows, int checkerCols)
+bool Calibrator::Add(YUVImage img, Transformation t, float checkerSize, int checkerRows, int checkerCols)
 {
 	cout << "Adding calibration -(" << count << "):\n";
-	cout << "\tCheckerboard: " << checkerRows << "x" << checkerCols << "\n";
-	cout << "\tCheckerboard size: " << checkerSize << "\n";
+	cout << "\tCheckerboard: " << checkerRows << "x" << checkerCols << endl;
+	cout << "\tCheckerboard size: " << checkerSize << endl;
 	cout << "\tPosition: (" << t.loc.x << ", " << t.loc.y << ", " << t.loc.z << ")\n";
 	cout << "\tQuaternion: (" << t.rot.r << ", " << t.rot.i << ", " << t.rot.j << ", " << t.rot.k << ")\n";
 
@@ -38,7 +38,7 @@ void Calibrator::Add(YUVImage img, Transformation t, float checkerSize, int chec
 	if (imgCorners.size() == 0)
 	{
 		cout << "\tFailed! Could not find Checkerboard.\n";
-		return;
+		return false;
 	}
 	else
 	{
@@ -51,7 +51,7 @@ void Calibrator::Add(YUVImage img, Transformation t, float checkerSize, int chec
 	if (!isCalibrated)
 	{
 		intrinsicErr = CalibrateIntrinsicParameters(cb.GetInnerCorners(), imgCorners, imgSize);
-		cout << "\t\tIntrinsic Error: " << intrinsicErr << "\n";
+		cout << "\t\tIntrinsic Error: " << intrinsicErr << endl;
 	}
 
 	// Take the flat, untransformated checkboard, and rotate it into 3d space
@@ -65,11 +65,19 @@ void Calibrator::Add(YUVImage img, Transformation t, float checkerSize, int chec
 
 	double extrinsicErr;
 	extrinsicErr = CalibrateExtrinsicParameters(calObjPoints, calImgPoints);
-	cout << "\t\tExtrinsic Error: " << extrinsicErr << "\n";
+	cout << "\t\tExtrinsic Error: " << extrinsicErr << endl;
+
+#ifdef _DEBUG
+	cout << "\t\tCam Mat: " << endl << "\t\t\t" << constants.camMat << endl;
+	cout << "\t\tDistortion Coeff: " << endl << "\t\t\t" << constants.distCoeffs << endl;
+	cout << "\t\tRvec: " << endl << "\t\t\t" << constants.rvec_cw << endl;
+	cout << "\t\tTvec: " << endl << "\t\t\t" << constants.tvec_cw << endl;
+#endif
 
 	// We are now calibrated
 	isCalibrated = true;
 	count++;
+	return true;
 }
 
 Calibrator::Constants Calibrator::GetConstants()
@@ -129,12 +137,6 @@ double Calibrator::CalibrateIntrinsicParameters(vector<Point3f> objPoints, vecto
 
 	Mat r, t;
 	InvertRT(rvecs[0], tvecs[0], r, t);
-
-	Vector3f calPos3 = Vector3f(
-		(float)t.at<double>(0),
-		(float)t.at<double>(1),
-		(float)t.at<double>(2)
-	);
 
 	return err;
 }

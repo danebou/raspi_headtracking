@@ -1,32 +1,18 @@
 #pragma once
-#include <vector>
-#include "utility/Vector3f.h"
-#include "utility/YUVImage.h"
-#include "utility/Transformation.h"
-#include "utility/Checkerboard.h"
-#include <opencv2/opencv.hpp>
-#include <mutex>
+#include "CalibratorInterface.h"
 
 using namespace std;
 using namespace cv;
 
-class Calibrator
+class Calibrator : public CalibratorInterface
 {
 public:
-
-	struct Constants
-	{
-		Mat camMat;
-		Mat distCoeffs;
-		Mat rvec_cw, tvec_cw;
-		double reprojectionErr;
-	};
 
 	bool isCalibrated;
 
 	Calibrator();
 	void Reset();
-	void Add(YUVImage img, Transformation transformation, float checkerSize, int checkerRows, int checkerCols);
+	bool Add(YUVImage img, Transformation transformation, float checkerSize, int checkerRows, int checkerCols);
 	Constants GetConstants();
 
 private:

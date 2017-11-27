@@ -147,6 +147,7 @@
     <ClCompile Include="..\..\..\..\head_tracking\utility\Vector3f.cpp" />
     <ClCompile Include="..\..\..\..\head_tracking\utility\YUVImage.cpp" />
     <ClCompile Include="..\..\..\src\main.cpp" />
+    <ClCompile Include="..\..\..\src\mock\MockCalibrator.cpp" />
     <ClCompile Include="..\..\..\src\mock\MockController.cpp" />
     <ClCompile Include="..\..\..\src\mock\MockSerial.cpp" />
     <ClCompile Include="..\..\..\src\test_Calibrator.cpp" />
@@ -162,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\head_tracking\Calibrator.h" />
+    <ClInclude Include="..\..\..\..\head_tracking\CalibratorInterface.h" />
     <ClInclude Include="..\..\..\..\head_tracking\com\COBS.h" />
     <ClInclude Include="..\..\..\..\head_tracking\com\CommandParser.h" />
     <ClInclude Include="..\..\..\..\head_tracking\com\SerialInterface.h" />
@@ -176,8 +178,10 @@
     <ClInclude Include="..\..\..\..\head_tracking\utility\Transformation.h" />
     <ClInclude Include="..\..\..\..\head_tracking\utility\Vector3f.h" />
     <ClInclude Include="..\..\..\..\head_tracking\utility\YUVImage.h" />
+    <ClInclude Include="..\..\..\src\mock\MockCalibrator.h" />
     <ClInclude Include="..\..\..\src\mock\MockController.h" />
     <ClInclude Include="..\..\..\src\mock\MockSerial.h" />
+    <ClInclude Include="MockCalibrator.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\data\ir_tracking_easy.avi">

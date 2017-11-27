@@ -18,7 +18,8 @@ public:
 
 	}
 	uint8_t intensityThreshold = 80;
-	//const uint8_t intensityThreshold = 80;
+	const int maxIterations = 10000;
+	bool reachedMaxIter = false;;
 
 	vector<Feature> FindFeatures(const YUVImage & image, Rectangle region);
 

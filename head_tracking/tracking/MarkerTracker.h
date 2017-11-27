@@ -4,7 +4,7 @@
 #pragma once
 #include "FeatureFinder.h"
 #include "utility/Transformation.h"
-#include "Calibrator.h"
+#include "CalibratorInterface.h"
 #include <vector>
 
 using namespace std;
@@ -12,14 +12,14 @@ using namespace std;
 class MarkerTracker
 {
 public:
-	MarkerTracker(Calibrator & calibrator, vector<Vec3f> model);
+	MarkerTracker(CalibratorInterface & calibrator, vector<Vec3f> model);
 
 	Vector3f FindLocation(const YUVImage & image);
 
 private:
 	const vector<Vec3f> model;
 	FeatureFinder ff;
-	Calibrator & calibrator;
+	CalibratorInterface & calibrator;
 
 	vector<Feature> TrackFeatures(const YUVImage & image);
 };

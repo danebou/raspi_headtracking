@@ -7,7 +7,7 @@ using namespace cv;
 
 bool sizesort(Feature a, Feature b) { return a.size > b.size; }
 
-MarkerTracker::MarkerTracker(Calibrator & calibrator, vector<Vec3f> model)
+MarkerTracker::MarkerTracker(CalibratorInterface & calibrator, vector<Vec3f> model)
 	: calibrator(calibrator), model(model)
 {
 }
@@ -21,13 +21,13 @@ Vector3f MarkerTracker::FindLocation(const YUVImage & image)
 		return Vector3f(NAN, NAN, NAN);
 	
 	// Prep feature points (Convert points to Point2f vector)
-	vector<Point2f> features2d;
+	vector<Point2f> features2d(model.size());
 	for (int i = 0; i < model.size(); i++)
 	{
 		features2d[i] = Point2f(features[i].x, features[i].y);
 	}
 	
-	Calibrator::Constants c = calibrator.GetConstants();
+	CalibratorInterface::Constants c = calibrator.GetConstants();
 
 	// Get model relative to camera location
 	Mat rvec_mc, tvec_mc;
@@ -39,6 +39,9 @@ Vector3f MarkerTracker::FindLocation(const YUVImage & image)
 	// Hence, model to world space. 
 	Mat rvec_mw, tvec_mw;
 	composeRT(rvec_mc, tvec_mc, c.rvec_cw, c.tvec_cw, rvec_mw, tvec_mw);
+
+	cout << "Rvec2: " << endl << "\t\t\t" << rvec_mc << endl;
+	cout << "Tvec2: " << endl << "\t\t\t" << tvec_mc << endl;
 
 	// Get locaton vector from tvec Mat
 	Vector3f loc; 
@@ -75,7 +78,7 @@ vector<Feature> MarkerTracker::TrackFeatures(const YUVImage & image)
 	}
 	// When we have found all the features, or we have checked the entire image we are done
 	while (features.size() < model.size() 
-		&& region != Rectangle(0, 0, image.width - 1, image.height - 1));
+		&& region != Rectangle(0, 0, image.width, image.height));
 
 	// If we couldn't find enough features and we checked the entire image, no features found :(
 	if (features.size() < model.size())

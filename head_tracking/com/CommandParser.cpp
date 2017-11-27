@@ -4,15 +4,27 @@
 #include <vector>
 #include <iostream>
 
+using namespace std;
+
 CommandParser::CommandParser(ControllerInterface& controller, SerialInterface& serial)
 	: controller(controller), serial(serial)
 {
-	// Begin receiveCommand thread
-	receiveThread = new std::thread(&CommandParser::ReceiveTask, this);
+	receiveThread = new thread(&CommandParser::ReceiveTask, this);
 }
 
 CommandParser::~CommandParser()
 {
+
+	{
+		lock_guard<mutex> lg(stopThread_m);
+		stopThread = true;
+	}
+
+	// Wait for threads to finish canceling 
+	// We could in theory just call delete, but this is causing gtest to freak out. (But why??)
+	if (receiveThread->joinable())
+		receiveThread->join();
+
 	delete receiveThread;
 }
 
@@ -138,10 +150,13 @@ void CommandParser::ReceiveTask()
 
 	while (true)
 	{
+		{
+			lock_guard<mutex> lg(stopThread_m);
+			if (stopThread)
+				break;
+		}
 		using namespace std::this_thread;
 		sleep_for(chrono::milliseconds(1000));
-
-		cout << "Hi from implemented read thread!\n" << 0;
 
 		while (serial.Read(&readChar, 1) > 0)
 		{

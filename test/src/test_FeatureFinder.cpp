@@ -1,12 +1,11 @@
-#include <gmock\gmock.h>
-#include <gtest\gtest.h>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 #include "tracking/FeatureFinder.h"
 #include "tracking/Feature.h"
 #include <string>
 #include <vector>
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 using namespace cv;
@@ -76,7 +75,7 @@ TEST(FeatureFinder, FindsSingleFeature)
 	delete image;
 }
 
-void FeatureFinderVideoTest(string fileName, vector<int> nonTrackFrames)
+void FeatureFinderVideoTest(string fileName, vector<int> nonTrackFrames, int featureCount = -1)
 {
 	// Open video
 	VideoCapture cap(fileName); // open the default camera
@@ -92,6 +91,7 @@ void FeatureFinderVideoTest(string fileName, vector<int> nonTrackFrames)
 	// Create window
 	namedWindow("IR Tracking Stress", CV_WINDOW_AUTOSIZE);
 #endif
+
 	// Loop over video frames
 	for (;;)
 	{
@@ -112,10 +112,9 @@ void FeatureFinderVideoTest(string fileName, vector<int> nonTrackFrames)
 
 		// Did we find any features?
 		bool found = features.size() > 0;
+		bool foundAll = found & (featureCount == -1 || features.size() >= featureCount);
 		bool frameHasFeature = find(nonTrackFrames.begin(), nonTrackFrames.end(), frameIndex)
 			== nonTrackFrames.end();
-
-		ASSERT_EQ(frameHasFeature, found);
 
 #ifdef _DEBUG
 		// Grayscale image
@@ -130,6 +129,9 @@ void FeatureFinderVideoTest(string fileName, vector<int> nonTrackFrames)
 		if (!found && frameHasFeature)
 			putText(gray, "Tracker not found!", Point(width / 2, height / 2),
 				FONT_HERSHEY_SIMPLEX, 1.0f, Scalar(0, 0, 255), 3);
+		if (!foundAll && frameHasFeature)
+			putText(gray, "Could not find all features", Point(width / 2, height / 2),
+				FONT_HERSHEY_SIMPLEX, 1.0f, Scalar(0, 0, 255), 3);
 
 		// Draw frame index
 		stringstream frameDescStr;
@@ -141,12 +143,14 @@ void FeatureFinderVideoTest(string fileName, vector<int> nonTrackFrames)
 		imshow("IR Tracking", gray);
 
 		// Wait to display next frame, (wait a full second for failed)
-		if (waitKey(found || !frameHasFeature ? 1 : 1000) >= 0)
+		if (waitKey(foundAll || !frameHasFeature ? 1 : 1000) >= 0)
 		{
 			FAIL();
 			break;
 		}
 #endif
+
+		ASSERT_EQ(frameHasFeature, foundAll) << "Frame :" << frameIndex;
 	}
 #ifdef _DEBUG
 	destroyWindow("IR Tracking Stress");
@@ -171,4 +175,13 @@ TEST(FeatureFinder, FindsFeatureStress)
 		1653, 1654
 	};
 	FeatureFinderVideoTest("data/ir_tracking_stress.avi", nonTrackFrames);
+}
+
+TEST(FeatureFinder, FindsFeature4Point)
+{
+	
+	const vector<int> nonTrackFrames = // Frames that do not have a track point visible
+	{
+	};
+	FeatureFinderVideoTest("data/ir_tracking_4point.avi", nonTrackFrames, 4);
 }

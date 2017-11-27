@@ -1,15 +1,15 @@
 #include "MockController.h"
 
-void MockController::ProcessCameraFrame(YUVImage image)
+Vector3f MockController::ProcessCameraFrame(const YUVImage image)
 {
-
+	return Vector3f(NAN, NAN, NAN);
 }
 void MockController::ResetCalibration(int cameraNum)
 {
 
 }
 
-void MockController::AddCalibration(int cameraNum, Transformation t, float checkerSize)
+bool MockController::AddCalibration(int cameraNum, Transformation t, float checkerSize)
 {
-
+	return false;
 }
