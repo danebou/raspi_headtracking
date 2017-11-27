@@ -314,7 +314,7 @@ int raspicamcontrol_cycle_test(MMAL_COMPONENT_T *camera)
          raspicamcontrol_set_exposure_mode(camera, exposure_map[parameter_option].mmal_mode);
       else
       {
-         raspicamcontrol_set_exposure_mode(camera, MMAL_PARAM_EXPOSUREMODE_AUTO);
+         raspicamcontrol_set_exposure_mode(camera, MMAL_PARAM_EXPOSUREMODE_OFF);
          parameter++;
       }
    }
@@ -438,7 +438,7 @@ static MMAL_PARAM_EXPOSUREMODE_T exposure_mode_from_string(const char *str)
       return (MMAL_PARAM_EXPOSUREMODE_T)i;
 
    vcos_log_error("Unknown exposure mode: %s", str);
-   return MMAL_PARAM_EXPOSUREMODE_AUTO;
+   return MMAL_PARAM_EXPOSUREMODE_OFF;
 }
 
 /**
@@ -888,7 +888,7 @@ void raspicamcontrol_set_defaults(RASPICAM_CAMERA_PARAMETERS *params)
    params->ISO = 0;                    // 0 = auto
    params->videoStabilisation = 0;
    params->exposureCompensation = 0;
-   params->exposureMode = MMAL_PARAM_EXPOSUREMODE_AUTO;
+   params->exposureMode = MMAL_PARAM_EXPOSUREMODE_OFF;
    params->exposureMeterMode = MMAL_PARAM_EXPOSUREMETERINGMODE_AVERAGE;
    params->awbMode = MMAL_PARAM_AWBMODE_AUTO;
    params->imageEffect = MMAL_PARAM_IMAGEFX_NONE;
